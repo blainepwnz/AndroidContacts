@@ -1,7 +1,5 @@
 package com.tomash.contactgetter.main;
 
-import android.content.ContentProviderOperation;
-import android.content.ContentProviderResult;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -22,8 +20,7 @@ import com.tomash.contactgetter.interfaces.WithLabelCreator;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class DbHandler {
+public class ContactsGetter {
     private ContentResolver mResolver;
     final private String MAIN_DATA_KEY = "data1";
     final private String LABEL_DATA_KEY = "data2";
@@ -33,20 +30,22 @@ public class DbHandler {
     final private String ID_KEY = "contact_id";
 
 
-    public DbHandler(Context context) {
-        mResolver = context.getContentResolver();
+    private ContactsGetter(ContentResolver resolver) {
+        this.mResolver = resolver;
     }
 
-    private Cursor getMainContactsCursor() {
-        String selection = ContactsContract.CommonDataKinds.Phone.HAS_PHONE_NUMBER + " = 1 ";
-        Cursor cur = mResolver.query(ContactsContract.Contacts.CONTENT_URI,
-            null, selection, null, null);
-        return cur;
+    private Cursor getAllContactsCursor(String ordering) {
+        return mResolver.query(ContactsContract.Contacts.CONTENT_URI,
+            null, null, null, ordering);
     }
 
-    public List<Contact> getContacts() {
+    private Cursor getContactsCursorWithSelection(String ordering, String selection, String[] selectionArgs) {
+        return mResolver.query(ContactsContract.Contacts.CONTENT_URI,
+            null, selection, selectionArgs, ordering);
+    }
+
+    private List<Contact> getContacts(Cursor c) {
         List<Contact> contactsList = new ArrayList<>();
-        Cursor c = getMainContactsCursor();
         SparseArray<List<PhoneNumber>> phonesDataMap = getDataMap(getCursorFromUri(ContactsContract.CommonDataKinds.Phone.CONTENT_URI), new WithLabelCreator<PhoneNumber>() {
             @Override
             public PhoneNumber create(String mainData, int contactId, int labelId, String labelName) {
@@ -180,74 +179,6 @@ public class DbHandler {
         return dataSparseArray;
     }
 
-    public boolean deleteContactWithId(String contactId) {
-        Uri uri = Uri.withAppendedPath(ContactsContract.RawContacts.CONTENT_URI, contactId);
-        int deleted = mResolver.delete(uri, null, null);
-        return deleted > 0;
-    }
-
-    public int addContact(Contact contact) {
-        ArrayList<ContentProviderOperation> op_list = new ArrayList<ContentProviderOperation>();
-//        Map<String, Integer> mobileLabelMap = Util.getLabelTypeMap(true);
-//        Map<String, Integer> otherLabelMap = Util.getLabelTypeMap(false);
-        op_list.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
-            .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
-            .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
-            .build());
-
-        op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-            .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-            .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-            .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, contact.getCompositeName())
-            .build());
-
-//        for (Pair<String, String> emailLabelPair : contact.getEmailList()) {
-//            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-//                .withValueBackReference(ContactsContract.Contacts.Data.RAW_CONTACT_ID, 0)
-//                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-//                .withValue(ContactsContract.CommonDataKinds.Email.DATA, emailLabelPair.first)
-//                .withValue(ContactsContract.CommonDataKinds.Email.TYPE, otherLabelMap.get(emailLabelPair.second))
-//                .build());
-//        }
-//        for (Pair<String, String> phoneLabelPair : contact.getPhoneList()) {
-//            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-//                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-//                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-//                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phoneLabelPair.first)
-//                .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, mobileLabelMap.get(phoneLabelPair.second))
-//                .build());
-//        }
-//        for (Pair<String, String> addressLabelPair : contact.getAddressesList()) {
-//            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-//                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-//                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
-//                .withValue(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS, addressLabelPair.first)
-//                .withValue(ContactsContract.CommonDataKinds.StructuredPostal.TYPE, otherLabelMap.get(addressLabelPair.second))
-//                .build());
-//        }
-        for (String webSite : contact.getWebsitesList()) {
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.StructuredPostal.DATA1, webSite)
-                .build());
-        }
-        if (!contact.getNote().isEmpty()) {
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.StructuredPostal.DATA1, contact.getNote())
-                .build());
-        }
-        try {
-            ContentProviderResult[] results = mResolver.applyBatch(ContactsContract.AUTHORITY, op_list);
-//            return Single.just(Integer.parseInt(results[0].uri.getLastPathSegment()));
-
-        } catch (Exception e) {
-//            return Single.just(-1);
-        }
-        return 1;
-    }
 
     private Cursor getCursorFromUri(Uri uri) {
         return mResolver.query(uri, null,
@@ -261,4 +192,106 @@ public class DbHandler {
         return mResolver.query(ContactsContract.Data.CONTENT_URI,
             null, orgWhere, orgWhereParams, null);
     }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////BUILDER//////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class Builder {
+        private ContentResolver mResolver;
+        private Sorting mSortOrder = Sorting.BY_DISPLAY_NAME_ASC;
+        private StringBuilder mSelectionBuilder = new StringBuilder();
+        private List<String> mParamsList = new ArrayList<>();
+
+        public Builder(Context ctx) {
+            mResolver = ctx.getContentResolver();
+        }
+
+        /**
+         * Sets sort order for all contacts
+         * By default is ascending by display name
+         *
+         * @param sortOrder order to sort
+         */
+        public Builder setSortOrder(Sorting sortOrder) {
+            this.mSortOrder = sortOrder;
+            return this;
+        }
+
+        /**
+         * Should get all contacts or contacts only with phones
+         * By default returns all contacts
+         */
+        public Builder onlyWithPhones() {
+            if (mSelectionBuilder.length() != 0)
+                mSelectionBuilder.append(" AND ");
+            mSelectionBuilder.append(ContactsContract.CommonDataKinds.Phone.HAS_PHONE_NUMBER)
+                .append(" = 1");
+            return this;
+        }
+
+        /**
+         * Searches for contacts with name that contains sequence
+         *
+         * @param nameLike sequence to search for
+         */
+        public Builder withNameLike(String nameLike) {
+            if (mSelectionBuilder.length() != 0)
+                mSelectionBuilder.append(" AND ");
+            mSelectionBuilder.append(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+                .append(" LIKE ?");
+            mParamsList.add("%" + nameLike + "%");
+            return this;
+        }
+
+        /**
+         * Searches for contacts that contains this number sequence
+         *
+         * @param number number sequence to search for
+         */
+        public Builder withPhoneLike(String number) {
+            if (mSelectionBuilder.length() != 0)
+                mSelectionBuilder.append(" AND ");
+            mSelectionBuilder.append(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                .append(" LIKE ?");
+            mParamsList.add(number);
+            return this;
+        }
+
+
+        /**
+         * Builds list of contacts
+         */
+        public List<Contact> build() {
+            ContactsGetter getter = new ContactsGetter(mResolver);
+            Cursor mainCursor;
+            if (mSelectionBuilder.length() == 0)
+                mainCursor = getter.getAllContactsCursor(mSortOrder.getSorting());
+            else
+                mainCursor = getter.getContactsCursorWithSelection(mSortOrder.getSorting(), generateSelection(), generateSelectionArgs());
+            return new ContactsGetter(mResolver).getContacts(mainCursor);
+        }
+
+        /**
+         * Get first contact of null if no contacts with these params
+         */
+        public Contact firstOrNull() {
+            List<Contact> contacts = build();
+            if (contacts.isEmpty())
+                return null;
+            else
+                return contacts.get(0);
+        }
+
+        private String generateSelection() {
+            return mSelectionBuilder.toString();
+        }
+
+        private String[] generateSelectionArgs() {
+            return mParamsList.toArray(new String[mParamsList.size()]);
+        }
+
+    }
+
+
 }

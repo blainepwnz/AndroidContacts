@@ -4,28 +4,30 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.tomash.contactgetter.entity.Address;
 import com.tomash.contactgetter.entity.Contact;
-import com.tomash.contactgetter.main.DbHandler;
+import com.tomash.contactgetter.main.ContactsGetter;
+import com.tomash.contactgetter.main.Sorting;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private DbHandler mHandler;
+//    private ContactsGetter mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mHandler = new DbHandler(this);
+//        mHandler = new ContactsGetter(this);
+
+
         findViewById(R.id.sniff_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println(123);
-               List<Contact> contactList =  mHandler.getContacts();
-                System.out.println(12345);
-                System.out.println(contactList);
+                new ContactsGetter.Builder(MainActivity.this)
+                    .setSortOrder(Sorting.BY_DISPLAY_NAME_ASC)
+                    .withNameLike("a")
+                    .build();
             }
         });
     }
