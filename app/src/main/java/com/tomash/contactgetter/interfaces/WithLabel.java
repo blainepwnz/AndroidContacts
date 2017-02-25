@@ -14,7 +14,7 @@ public abstract class WithLabel implements Labelable {
         this.mainData = mainData;
         this.contactId = contactId;
         this.labelId = labelId;
-        if (labelId != 0)
+        if (labelName == null)
             this.labelName = getLabelNameMap().get(labelId);
         else
             this.labelName = labelName;

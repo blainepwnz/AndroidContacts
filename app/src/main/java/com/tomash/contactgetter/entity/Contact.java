@@ -13,6 +13,9 @@ public class Contact {
     private List<PhoneNumber> phoneList;
     private List<Address> addressesList;
     private List<String> websitesList;
+    private List<IMAddress> imAddressesList;
+    private List<Relation> relationsList;
+    private List<SpecialDate> specialDatesList;
     private String note;
     private String compositeName;
     private long lastModificationDate;
@@ -90,5 +93,30 @@ public class Contact {
         return this;
     }
 
+    public List<IMAddress> getImAddressesList() {
+        return imAddressesList;
+    }
 
+    public Contact setImAddressesList(List<IMAddress> imAddressesList) {
+        this.imAddressesList = imAddressesList;
+        return this;
+    }
+
+    public List<Relation> getRelationsList() {
+        return relationsList;
+    }
+
+    public Contact setRelationsList(List<Relation> relationsList) {
+        this.relationsList = relationsList;
+        return this;
+    }
+
+    public List<SpecialDate> getSpecialDatesList() {
+        return specialDatesList;
+    }
+
+    public Contact setSpecialDatesList(List<SpecialDate> specialDatesList) {
+        this.specialDatesList = specialDatesList;
+        return this;
+    }
 }

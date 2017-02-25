@@ -12,14 +12,15 @@ import android.util.SparseArray;
 import com.tomash.contactgetter.entity.Address;
 import com.tomash.contactgetter.entity.Contact;
 import com.tomash.contactgetter.entity.Email;
+import com.tomash.contactgetter.entity.IMAddress;
 import com.tomash.contactgetter.entity.PhoneNumber;
+import com.tomash.contactgetter.entity.Relation;
+import com.tomash.contactgetter.entity.SpecialDate;
 import com.tomash.contactgetter.interfaces.WithLabel;
 import com.tomash.contactgetter.interfaces.WithLabelCreator;
-import com.tomash.contactgetter.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 public class DbHandler {
@@ -27,6 +28,8 @@ public class DbHandler {
     final private String MAIN_DATA_KEY = "data1";
     final private String LABEL_DATA_KEY = "data2";
     final private String CUSTOM_LABEL_DATA_KEY = "data3";
+    final private String LABEL_DATA_KEY_IM_ADDRESS = "data5";
+    final private String CUSTOM_LABEL_DATA_KEY_IM_ADDRESS = "data6";
     final private String ID_KEY = "contact_id";
 
 
@@ -44,24 +47,38 @@ public class DbHandler {
     public List<Contact> getContacts() {
         List<Contact> contactsList = new ArrayList<>();
         Cursor c = getMainContactsCursor();
-        SparseArray<List<PhoneNumber>> phonesDataMap = getDataMap(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, new WithLabelCreator<PhoneNumber>() {
+        SparseArray<List<PhoneNumber>> phonesDataMap = getDataMap(getCursorFromUri(ContactsContract.CommonDataKinds.Phone.CONTENT_URI), new WithLabelCreator<PhoneNumber>() {
             @Override
             public PhoneNumber create(String mainData, int contactId, int labelId, String labelName) {
                 return new PhoneNumber(mainData, contactId, labelId, labelName);
             }
         });
-        SparseArray<List<Address>> addressDataMap = getDataMap(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI, new WithLabelCreator<Address>() {
+        SparseArray<List<Address>> addressDataMap = getDataMap(getCursorFromUri(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI), new WithLabelCreator<Address>() {
             @Override
             public Address create(String mainData, int contactId, int labelId, String labelName) {
                 return new Address(mainData, contactId, labelId, labelName);
             }
         });
-        SparseArray<List<Email>> emailDataMap = getDataMap(ContactsContract.CommonDataKinds.Email.CONTENT_URI, new WithLabelCreator<Email>() {
+        SparseArray<List<Email>> emailDataMap = getDataMap(getCursorFromUri(ContactsContract.CommonDataKinds.Email.CONTENT_URI), new WithLabelCreator<Email>() {
             @Override
             public Email create(String mainData, int contactId, int labelId, String labelName) {
                 return new Email(mainData, contactId, labelId, labelName);
             }
         });
+        SparseArray<List<SpecialDate>> specialDateMap = getDataMap(getCursorFromContentType(ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE), new WithLabelCreator<SpecialDate>() {
+            @Override
+            public SpecialDate create(String mainData, int contactId, int labelId, String labelName) {
+                return new SpecialDate(mainData, contactId, labelId, labelName);
+            }
+        });
+        SparseArray<List<Relation>> relationMap = getDataMap(getCursorFromContentType(ContactsContract.CommonDataKinds.Relation.CONTENT_ITEM_TYPE), new WithLabelCreator<Relation>() {
+            @Override
+            public Relation create(String mainData, int contactId, int labelId, String labelName) {
+                return new Relation(mainData, contactId, labelId, labelName);
+            }
+        });
+        SparseArray<List<IMAddress>> imAddressesDataMap = getIMAddressesMap();
+//        getEventsMap();
         SparseArray<List<String>> websitesDataMap = getWebSitesMap();
         SparseArray<String> notesDataMap = getNotesMap();
         while (c.moveToNext()) {
@@ -75,6 +92,9 @@ public class DbHandler {
                 .setEmailList(emailDataMap.get(id))
                 .setWebsitesList(websitesDataMap.get(id))
                 .setNote(notesDataMap.get(id))
+                .setImAddressesList(imAddressesDataMap.get(id))
+                .setRelationsList(relationMap.get(id))
+                .setSpecialDatesList(specialDateMap.get(id))
                 .setCompositeName(c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))));
         }
         c.close();
@@ -84,10 +104,7 @@ public class DbHandler {
 
     private SparseArray<List<String>> getWebSitesMap() {
         SparseArray<List<String>> idSiteMap = new SparseArray<>();
-        String orgWhere = ContactsContract.Data.MIMETYPE + " = ?";
-        String[] orgWhereParams = new String[]{ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE};
-        Cursor websiteCur = mResolver.query(ContactsContract.Data.CONTENT_URI,
-            null, orgWhere, orgWhereParams, null);
+        Cursor websiteCur = getCursorFromContentType(ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE);
         if (websiteCur != null) {
             while (websiteCur.moveToNext()) {
                 int id = websiteCur.getInt(websiteCur.getColumnIndex(ID_KEY));
@@ -104,12 +121,32 @@ public class DbHandler {
         return idSiteMap;
     }
 
+    private SparseArray<List<IMAddress>> getIMAddressesMap() {
+        SparseArray<List<IMAddress>> idImAddressMap = new SparseArray<>();
+        Cursor cur = getCursorFromContentType(ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE);
+        if (cur != null) {
+            while (cur.moveToNext()) {
+                int id = cur.getInt(cur.getColumnIndex(ID_KEY));
+                String data = cur.getString(cur.getColumnIndex(MAIN_DATA_KEY));
+                int labelId = cur.getInt(cur.getColumnIndex(LABEL_DATA_KEY_IM_ADDRESS));
+                String customLabel = cur.getString(cur.getColumnIndex(CUSTOM_LABEL_DATA_KEY_IM_ADDRESS));
+                IMAddress current = new IMAddress(data, id, labelId, customLabel);
+                List<IMAddress> currentWebsiteList = idImAddressMap.get(id);
+                if (currentWebsiteList == null) {
+                    currentWebsiteList = new ArrayList<>();
+                    currentWebsiteList.add(current);
+                    idImAddressMap.put(id, currentWebsiteList);
+                } else currentWebsiteList.add(current);
+            }
+            cur.close();
+        }
+        return idImAddressMap;
+    }
+
+
     private SparseArray<String> getNotesMap() {
         SparseArray<String> idNoteMap = new SparseArray<>();
-        String orgWhere = ContactsContract.Data.MIMETYPE + " = ?";
-        String[] orgWhereParams = new String[]{ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE};
-        Cursor noteCur = mResolver.query(ContactsContract.Data.CONTENT_URI,
-            null, orgWhere, orgWhereParams, null);
+        Cursor noteCur = getCursorFromContentType(ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE);
         if (noteCur != null) {
             while (noteCur.moveToNext()) {
                 int id = noteCur.getInt(noteCur.getColumnIndex(ID_KEY));
@@ -121,17 +158,15 @@ public class DbHandler {
         return idNoteMap;
     }
 
-    private <T extends WithLabel> SparseArray<List<T>> getDataMap(Uri uri, WithLabelCreator<T> creator) {
+
+    private <T extends WithLabel> SparseArray<List<T>> getDataMap(Cursor dataCursor, WithLabelCreator<T> creator) {
         SparseArray<List<T>> dataSparseArray = new SparseArray<>();
-        Cursor pCur = mResolver.query(uri, null,
-            null,
-            null, null);
-        if (pCur != null) {
-            while (pCur.moveToNext()) {
-                int id = pCur.getInt(pCur.getColumnIndex(ID_KEY));
-                String data = pCur.getString(pCur.getColumnIndex(MAIN_DATA_KEY));
-                int labelId = pCur.getInt(pCur.getColumnIndex(LABEL_DATA_KEY));
-                String customLabel = pCur.getString(pCur.getColumnIndex(CUSTOM_LABEL_DATA_KEY));
+        if (dataCursor != null) {
+            while (dataCursor.moveToNext()) {
+                int id = dataCursor.getInt(dataCursor.getColumnIndex(ID_KEY));
+                String data = dataCursor.getString(dataCursor.getColumnIndex(MAIN_DATA_KEY));
+                int labelId = dataCursor.getInt(dataCursor.getColumnIndex(LABEL_DATA_KEY));
+                String customLabel = dataCursor.getString(dataCursor.getColumnIndex(CUSTOM_LABEL_DATA_KEY));
                 T current = creator.create(data, id, labelId, customLabel);
                 List<T> currentDataList = dataSparseArray.get(id);
                 if (currentDataList == null) {
@@ -140,11 +175,10 @@ public class DbHandler {
                     dataSparseArray.put(id, currentDataList);
                 } else currentDataList.add(current);
             }
-            pCur.close();
+            dataCursor.close();
         }
         return dataSparseArray;
     }
-    //label data key = 0 , data3 = custom
 
     public boolean deleteContactWithId(String contactId) {
         Uri uri = Uri.withAppendedPath(ContactsContract.RawContacts.CONTENT_URI, contactId);
@@ -154,8 +188,8 @@ public class DbHandler {
 
     public int addContact(Contact contact) {
         ArrayList<ContentProviderOperation> op_list = new ArrayList<ContentProviderOperation>();
-        Map<String, Integer> mobileLabelMap = Util.getLabelTypeMap(true);
-        Map<String, Integer> otherLabelMap = Util.getLabelTypeMap(false);
+//        Map<String, Integer> mobileLabelMap = Util.getLabelTypeMap(true);
+//        Map<String, Integer> otherLabelMap = Util.getLabelTypeMap(false);
         op_list.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
             .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
             .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
@@ -215,4 +249,16 @@ public class DbHandler {
         return 1;
     }
 
+    private Cursor getCursorFromUri(Uri uri) {
+        return mResolver.query(uri, null,
+            null,
+            null, null);
+    }
+
+    private Cursor getCursorFromContentType(String contentType) {
+        String orgWhere = ContactsContract.Data.MIMETYPE + " = ?";
+        String[] orgWhereParams = new String[]{contentType};
+        return mResolver.query(ContactsContract.Data.CONTENT_URI,
+            null, orgWhere, orgWhereParams, null);
+    }
 }
