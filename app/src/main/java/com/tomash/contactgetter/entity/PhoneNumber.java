@@ -21,7 +21,6 @@ public class PhoneNumber extends WithLabel {
         phoneNumberMap.put(6,"Pager");
         phoneNumberMap.put(7,"Other");
         phoneNumberMap.put(12,"Main");
-
     }
 
     public PhoneNumber(String mainData, int contactId, int labelId, String labelName) {

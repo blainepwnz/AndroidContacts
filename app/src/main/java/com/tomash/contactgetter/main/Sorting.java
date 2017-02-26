@@ -3,7 +3,7 @@ package com.tomash.contactgetter.main;
 import android.provider.ContactsContract;
 
 /**
- * Created by andrew on 2/25/17.
+ * Enum represents types of sorting that can be applied to contacts query.
  */
 
 public enum Sorting {

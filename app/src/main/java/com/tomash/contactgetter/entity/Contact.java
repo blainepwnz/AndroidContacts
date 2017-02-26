@@ -2,6 +2,7 @@ package com.tomash.contactgetter.entity;
 
 import android.util.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,14 +10,14 @@ import java.util.List;
  */
 public class Contact {
     private int contactId;
-    private List<Email> emailList;
-    private List<PhoneNumber> phoneList;
-    private List<Address> addressesList;
-    private List<String> websitesList;
-    private List<IMAddress> imAddressesList;
-    private List<Relation> relationsList;
-    private List<SpecialDate> specialDatesList;
-    private String note;
+    private List<Email> emailList = new ArrayList<>();
+    private List<PhoneNumber> phoneList = new ArrayList<>();
+    private List<Address> addressesList = new ArrayList<>();
+    private List<String> websitesList = new ArrayList<>();
+    private List<IMAddress> imAddressesList = new ArrayList<>();
+    private List<Relation> relationsList = new ArrayList<>();
+    private List<SpecialDate> specialDatesList = new ArrayList<>();
+    private String note = "";
     private String compositeName;
     private long lastModificationDate;
 
@@ -35,6 +36,7 @@ public class Contact {
     }
 
     public Contact setEmailList(List<Email> emailList) {
+        if (emailList==null)return this;
         this.emailList = emailList;
         return this;
     }
@@ -44,6 +46,7 @@ public class Contact {
     }
 
     public Contact setPhoneList(List<PhoneNumber> phoneList) {
+        if (phoneList==null)return this;
         this.phoneList = phoneList;
         return this;
     }
@@ -53,6 +56,7 @@ public class Contact {
     }
 
     public Contact setAddressesList(List<Address> addressesList) {
+        if (addressesList==null)return this;
         this.addressesList = addressesList;
         return this;
     }
@@ -71,6 +75,7 @@ public class Contact {
     }
 
     public Contact setWebsitesList(List<String> websitesList) {
+        if (websitesList==null)return this;
         this.websitesList = websitesList;
         return this;
     }
@@ -80,6 +85,7 @@ public class Contact {
     }
 
     public Contact setNote(String note) {
+        if(note==null)return this;
         this.note = note;
         return this;
     }
@@ -98,6 +104,7 @@ public class Contact {
     }
 
     public Contact setImAddressesList(List<IMAddress> imAddressesList) {
+        if (imAddressesList==null)return this;
         this.imAddressesList = imAddressesList;
         return this;
     }
@@ -107,6 +114,7 @@ public class Contact {
     }
 
     public Contact setRelationsList(List<Relation> relationsList) {
+        if (relationsList==null)return this;
         this.relationsList = relationsList;
         return this;
     }
@@ -116,6 +124,7 @@ public class Contact {
     }
 
     public Contact setSpecialDatesList(List<SpecialDate> specialDatesList) {
+        if (specialDatesList==null)return this;
         this.specialDatesList = specialDatesList;
         return this;
     }
