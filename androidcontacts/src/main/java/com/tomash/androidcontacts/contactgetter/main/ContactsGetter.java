@@ -404,7 +404,7 @@ public final class ContactsGetter {
          */
         public Builder withPhoneLike(final String number) {
             mFilterList.add(FilterUtils.withPhoneLikeFilter(number));
-            return this;
+            return onlyWithPhones();
         }
 
         /**
@@ -414,45 +414,49 @@ public final class ContactsGetter {
          */
         public Builder withPhone(final String number) {
             mFilterList.add(FilterUtils.withPhoneFilter(number));
-            return this;
+            return onlyWithPhones();
         }
 
         /**
          * Searches for contacts with this email
-         *
+         *Implicitly adds Email field
          * @param email email to search for
          */
         public Builder withEmail(final String email) {
+            addField(FieldType.EMAILS);
             mFilterList.add(FilterUtils.withEmailFilter(email));
             return this;
         }
 
         /**
          * Searches for contacts that contains sequence
-         *
+         *Implicitly adds Email field
          * @param sequence sequence to search for
          */
         public Builder withEmailLike(final String sequence) {
+            addField(FieldType.EMAILS);
             mFilterList.add(FilterUtils.withEmailLikeFilter(sequence));
             return this;
         }
 
         /**
          * Searches for contacts with this number
-         *
+         * Implicitly adds Address field
          * @param number number to search for
          */
         public Builder withAddress(final String number) {
+            addField(FieldType.ADDRESS);
             mFilterList.add(FilterUtils.withAddressFilter(number));
             return this;
         }
 
         /**
          * Searches for addresses that contains this sequence
-         *
+         * Implicitly adds Address field
          * @param sequence sequence to search for
          */
         public Builder withAddressLike(final String sequence) {
+            addField(FieldType.ADDRESS);
             mFilterList.add(FilterUtils.withAddressLikeFilter(sequence));
             return this;
         }
