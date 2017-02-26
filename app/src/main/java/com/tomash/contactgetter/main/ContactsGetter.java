@@ -10,6 +10,7 @@ import android.util.SparseArray;
 import com.tomash.contactgetter.entity.Address;
 import com.tomash.contactgetter.entity.Contact;
 import com.tomash.contactgetter.entity.Email;
+import com.tomash.contactgetter.entity.Group;
 import com.tomash.contactgetter.entity.IMAddress;
 import com.tomash.contactgetter.entity.NameData;
 import com.tomash.contactgetter.entity.Organization;
@@ -26,18 +27,19 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-public class ContactsGetter {
+public final class ContactsGetter {
     private ContentResolver mResolver;
+    private Context mCtx;
     private List<FieldType> mEnabledFields = new ArrayList<>();
     final private String MAIN_DATA_KEY = "data1";
     final private String LABEL_DATA_KEY = "data2";
     final private String CUSTOM_LABEL_DATA_KEY = "data3";
-    final private String COMPANY_TITLE_DATA_KEY = "data4";
     final private String ID_KEY = "contact_id";
 
 
-    public ContactsGetter(ContentResolver mResolver, List<FieldType> enabledFields) {
-        this.mResolver = mResolver;
+    public ContactsGetter(Context ctx, List<FieldType> enabledFields) {
+        mCtx = ctx;
+        this.mResolver = ctx.getContentResolver();
         this.mEnabledFields = enabledFields;
     }
 
@@ -50,36 +52,36 @@ public class ContactsGetter {
             null, selection, selectionArgs, ordering);
     }
 
-    private List<Contact> getContacts(Cursor c) {
+    private List<Contact> getContacts(final Cursor c) {
         List<Contact> contactsList = new ArrayList<>();
         SparseArray<List<PhoneNumber>> phonesDataMap = mEnabledFields.contains(FieldType.PHONE_NUMBERS) ? getDataMap(getCursorFromUri(ContactsContract.CommonDataKinds.Phone.CONTENT_URI), new WithLabelCreator<PhoneNumber>() {
             @Override
             public PhoneNumber create(String mainData, int contactId, int labelId, String labelName) {
-                return new PhoneNumber(mainData, contactId, labelId, labelName);
+                return new PhoneNumber(mainData, contactId, labelId, labelName, mCtx);
             }
         }) : new SparseArray<List<PhoneNumber>>();
         SparseArray<List<Address>> addressDataMap = mEnabledFields.contains(FieldType.ADDRESS) ? getDataMap(getCursorFromUri(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI), new WithLabelCreator<Address>() {
             @Override
             public Address create(String mainData, int contactId, int labelId, String labelName) {
-                return new Address(mainData, contactId, labelId, labelName);
+                return new Address(mainData, contactId, labelId, labelName, mCtx);
             }
         }) : new SparseArray<List<Address>>();
         SparseArray<List<Email>> emailDataMap = mEnabledFields.contains(FieldType.EMAILS) ? getDataMap(getCursorFromUri(ContactsContract.CommonDataKinds.Email.CONTENT_URI), new WithLabelCreator<Email>() {
             @Override
             public Email create(String mainData, int contactId, int labelId, String labelName) {
-                return new Email(mainData, contactId, labelId, labelName);
+                return new Email(mainData, contactId, labelId, labelName, mCtx);
             }
         }) : new SparseArray<List<Email>>();
         SparseArray<List<SpecialDate>> specialDateMap = mEnabledFields.contains(FieldType.SPECIAL_DATES) ? getDataMap(getCursorFromContentType(ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE), new WithLabelCreator<SpecialDate>() {
             @Override
             public SpecialDate create(String mainData, int contactId, int labelId, String labelName) {
-                return new SpecialDate(mainData, contactId, labelId, labelName);
+                return new SpecialDate(mainData, contactId, labelId, labelName, mCtx);
             }
         }) : new SparseArray<List<SpecialDate>>();
         SparseArray<List<Relation>> relationMap = mEnabledFields.contains(FieldType.RELATIONS) ? getDataMap(getCursorFromContentType(ContactsContract.CommonDataKinds.Relation.CONTENT_ITEM_TYPE), new WithLabelCreator<Relation>() {
             @Override
             public Relation create(String mainData, int contactId, int labelId, String labelName) {
-                return new Relation(mainData, contactId, labelId, labelName);
+                return new Relation(mainData, contactId, labelId, labelName, mCtx);
             }
         }) : new SparseArray<List<Relation>>();
         SparseArray<List<IMAddress>> imAddressesDataMap = mEnabledFields.contains(FieldType.IM_ADDRESSES) ? getIMAddressesMap() : new SparseArray<List<IMAddress>>();
@@ -88,7 +90,8 @@ public class ContactsGetter {
         SparseArray<String> nicknameDataMap = mEnabledFields.contains(FieldType.NICKNAME) ? getStringDataMap(ContactsContract.CommonDataKinds.Nickname.CONTENT_ITEM_TYPE) : new SparseArray<String>();
         SparseArray<String> sipDataMap = mEnabledFields.contains(FieldType.SIP) ? getStringDataMap(ContactsContract.CommonDataKinds.SipAddress.CONTENT_ITEM_TYPE) : new SparseArray<String>();
         SparseArray<Organization> organisationDataMap = mEnabledFields.contains(FieldType.ORGANIZATION) ? getOrganizationDataMap() : new SparseArray<Organization>();
-        SparseArray<NameData> nameDataMap = mEnabledFields.contains(FieldType.NAME_DATA) ? getNameDataMap(getCursorFromContentType(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)) : new SparseArray<NameData>();
+        SparseArray<NameData> nameDataMap = mEnabledFields.contains(FieldType.NAME_DATA) ? getNameDataMap() : new SparseArray<NameData>();
+        SparseArray<List<Group>> groupsDataMap = mEnabledFields.contains(FieldType.GROUPS) ? getGroupsDataMap() : new SparseArray<List<Group>>();
         while (c.moveToNext()) {
             int id = c.getInt(c.getColumnIndex(ContactsContract.Contacts._ID));
             long date = c.getLong(c.getColumnIndex(ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP));
@@ -110,6 +113,7 @@ public class ContactsGetter {
                 .setSipAddress(sipDataMap.get(id))
                 .setNameData(nameDataMap.get(id))
                 .setPhotoUri(photoUri)
+                .setGroupList(groupsDataMap.get(id))
                 .setCompositeName(c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))));
         }
         c.close();
@@ -136,7 +140,52 @@ public class ContactsGetter {
         return idSiteMap;
     }
 
-    private SparseArray<NameData> getNameDataMap(Cursor nameCursor) {
+    private SparseArray<Group> getGroupsMap() {
+        SparseArray<Group> idGroupMap = new SparseArray<>();
+        Cursor groupCursor = mResolver.query(
+            ContactsContract.Groups.CONTENT_URI,
+            new String[]{
+                ContactsContract.Groups._ID,
+                ContactsContract.Groups.TITLE
+            }, null, null, null
+        );
+        if (groupCursor != null) {
+            while (groupCursor.moveToNext()) {
+                int id = groupCursor.getInt(groupCursor.getColumnIndex(ContactsContract.Groups._ID));
+                String title = groupCursor.getString(groupCursor.getColumnIndex(ContactsContract.Groups.TITLE));
+                idGroupMap.put(id, new Group()
+                    .setGroupId(id)
+                    .setGroupTitle(title));
+            }
+            groupCursor.close();
+        }
+        return idGroupMap;
+    }
+
+    private SparseArray<List<Group>> getGroupsDataMap() {
+        SparseArray<List<Group>> idListGroupMap = new SparseArray<>();
+        SparseArray<Group> groupMapById = getGroupsMap();
+        Cursor groupMembershipCursor = getCursorFromContentType(ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE);
+        if (groupMembershipCursor != null) {
+            while (groupMembershipCursor.moveToNext()) {
+                int id = groupMembershipCursor.getInt(groupMembershipCursor.getColumnIndex(ID_KEY));
+                int groupId = groupMembershipCursor.getInt(groupMembershipCursor.getColumnIndex(MAIN_DATA_KEY));
+                List<Group> currentIdGroupList = idListGroupMap.get(id);
+                if (currentIdGroupList == null) {
+                    currentIdGroupList = new ArrayList<>();
+                    currentIdGroupList.add(groupMapById.get(groupId));
+                    idListGroupMap.put(id, currentIdGroupList);
+                } else
+                    currentIdGroupList.add(groupMapById.get(groupId));
+            }
+            groupMembershipCursor.close();
+        }
+        return idListGroupMap;
+    }
+
+
+    private SparseArray<NameData> getNameDataMap() {
+        Cursor nameCursor = getCursorFromContentType(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
         SparseArray<NameData> nameDataSparseArray = new SparseArray<>();
         if (nameCursor != null) {
             while (nameCursor.moveToNext()) {
@@ -170,7 +219,7 @@ public class ContactsGetter {
                 String data = cur.getString(cur.getColumnIndex(MAIN_DATA_KEY));
                 int labelId = cur.getInt(cur.getColumnIndex(ContactsContract.CommonDataKinds.Im.PROTOCOL));
                 String customLabel = cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Im.CUSTOM_PROTOCOL));
-                IMAddress current = new IMAddress(data, id, labelId, customLabel);
+                IMAddress current = new IMAddress(data, id, labelId, customLabel, mCtx);
                 List<IMAddress> currentWebsiteList = idImAddressMap.get(id);
                 if (currentWebsiteList == null) {
                     currentWebsiteList = new ArrayList<>();
@@ -216,8 +265,7 @@ public class ContactsGetter {
     }
 
 
-    private <T extends WithLabel> SparseArray<List<T>> getDataMap(Cursor
-                                                                      dataCursor, WithLabelCreator<T> creator) {
+    private <T extends WithLabel> SparseArray<List<T>> getDataMap(Cursor dataCursor, WithLabelCreator<T> creator) {
         SparseArray<List<T>> dataSparseArray = new SparseArray<>();
         if (dataCursor != null) {
             while (dataCursor.moveToNext()) {
@@ -257,7 +305,7 @@ public class ContactsGetter {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static class Builder {
-        private ContentResolver mResolver;
+        private Context mCtx;
         private Sorting mSortOrder = Sorting.BY_DISPLAY_NAME_ASC;
         private StringBuilder mSelectionBuilder = new StringBuilder();
         private List<String> mParamsList = new ArrayList<>(2);
@@ -265,7 +313,7 @@ public class ContactsGetter {
         private List<FieldType> mEnabledFields = new ArrayList<>(8);
 
         public Builder(Context ctx) {
-            mResolver = ctx.getContentResolver();
+            mCtx = ctx;
         }
 
         /**
@@ -467,8 +515,8 @@ public class ContactsGetter {
         /**
          * Builds list of contacts
          */
-        public List<Contact> build() {
-            ContactsGetter getter = new ContactsGetter(mResolver, mEnabledFields);
+        public List<Contact> buildList() {
+            ContactsGetter getter = new ContactsGetter(mCtx, mEnabledFields);
             Cursor mainCursor;
             if (mSelectionBuilder.length() == 0)
                 mainCursor = getter.getAllContactsCursor(mSortOrder.getSorting());
@@ -478,10 +526,25 @@ public class ContactsGetter {
         }
 
         /**
+         * Gets contact by local id
+         *
+         * @param id id to search for
+         * @return contact with data specified by options or null if no contact with this id
+         */
+        public Contact getById(int id) {
+            if (mSelectionBuilder.length() != 0)
+                mSelectionBuilder.append(" AND ");
+            mSelectionBuilder.append(ContactsContract.CommonDataKinds.Phone._ID)
+                .append(" = ?");
+            mParamsList.add(String.valueOf(id));
+            return firstOrNull();
+        }
+
+        /**
          * Get first contact of null if no contacts with these params
          */
         public Contact firstOrNull() {
-            List<Contact> contacts = build();
+            List<Contact> contacts = buildList();
             if (contacts.isEmpty())
                 return null;
             else

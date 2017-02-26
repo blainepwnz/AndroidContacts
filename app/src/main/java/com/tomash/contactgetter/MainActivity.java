@@ -5,10 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.tomash.contactgetter.entity.Contact;
 import com.tomash.contactgetter.main.ContactsGetter;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,9 +20,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 System.out.println(123);
-                List<Contact> list = new ContactsGetter.Builder(MainActivity.this)
-                    .onlyWithPhotos()
-                    .build();
+                new ContactsGetter.Builder(MainActivity.this)
+                    .allFields()
+                    .buildList();
                 System.out.println(12345);
             }
         });

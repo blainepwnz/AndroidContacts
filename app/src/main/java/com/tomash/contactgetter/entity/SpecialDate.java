@@ -1,6 +1,7 @@
 package com.tomash.contactgetter.entity;
 
-import android.util.SparseArray;
+import android.content.Context;
+import android.provider.ContactsContract;
 
 import com.tomash.contactgetter.interfaces.WithLabel;
 
@@ -9,20 +10,13 @@ import com.tomash.contactgetter.interfaces.WithLabel;
  */
 
 public class SpecialDate extends WithLabel {
-    private static SparseArray<String> dateArray;
-    static {
-        dateArray = new SparseArray<>();
-        dateArray.put(1,"Anniversary");
-        dateArray.put(2,"Other");
-        dateArray.put(3,"Birthday");
-    }
 
-    public SpecialDate(String mainData, int contactId, int labelId, String labelName) {
-        super(mainData, contactId, labelId, labelName);
+    public SpecialDate(String mainData, int contactId, int labelId, String labelName, Context ctx) {
+        super(mainData, contactId, labelId, labelName, ctx);
     }
 
     @Override
-    public SparseArray<String> getLabelNameMap() {
-        return dateArray;
+    public int getLabelNameResId(int id) {
+        return ContactsContract.CommonDataKinds.Event.getTypeResource(id);
     }
 }

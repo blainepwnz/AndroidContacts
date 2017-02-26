@@ -47,7 +47,7 @@ class ContactsSaver {
 //                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
 //                .withValue(ContactsContract.CommonDataKinds.Email.DATA, emailLabelPair.first)
 //                .withValue(ContactsContract.CommonDataKinds.Email.TYPE, otherLabelMap.get(emailLabelPair.second))
-//                .build());
+//                .buildList());
 //        }
 //        for (Pair<String, String> phoneLabelPair : contact.getPhoneList()) {
 //            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
@@ -55,7 +55,7 @@ class ContactsSaver {
 //                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
 //                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phoneLabelPair.first)
 //                .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, mobileLabelMap.get(phoneLabelPair.second))
-//                .build());
+//                .buildList());
 //        }
 //        for (Pair<String, String> addressLabelPair : contact.getAddressesList()) {
 //            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
@@ -63,7 +63,7 @@ class ContactsSaver {
 //                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
 //                .withValue(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS, addressLabelPair.first)
 //                .withValue(ContactsContract.CommonDataKinds.StructuredPostal.TYPE, otherLabelMap.get(addressLabelPair.second))
-//                .build());
+//                .buildList());
 //        }
         for (String webSite : contact.getWebsitesList()) {
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)

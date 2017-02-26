@@ -1,5 +1,7 @@
 package com.tomash.contactgetter.entity;
 
+import android.content.Context;
+import android.provider.ContactsContract;
 import android.util.SparseArray;
 
 import com.tomash.contactgetter.interfaces.WithLabel;
@@ -9,25 +11,13 @@ import com.tomash.contactgetter.interfaces.WithLabel;
  */
 
 public class IMAddress extends WithLabel {
-    private static SparseArray<String> imAddressMap;
-    static {
-        imAddressMap = new SparseArray<>();
-        imAddressMap.put(0,"AIM");
-        imAddressMap.put(1,"Windows Live");
-        imAddressMap.put(2,"Yahoo");
-        imAddressMap.put(3,"Skype");
-        imAddressMap.put(4,"QQ");
-        imAddressMap.put(5,"Hangouts");
-        imAddressMap.put(6,"ICQ");
-        imAddressMap.put(7,"Jabber");
-    }
 
-    public IMAddress(String mainData, int contactId, int labelId, String labelName) {
-        super(mainData, contactId, labelId, labelName);
+    public IMAddress(String mainData, int contactId, int labelId, String labelName, Context ctx) {
+        super(mainData, contactId, labelId, labelName, ctx);
     }
 
     @Override
-    public SparseArray<String> getLabelNameMap() {
-        return imAddressMap;
+    public int getLabelNameResId(int id) {
+        return ContactsContract.CommonDataKinds.Im.getProtocolLabelResource(id);
     }
 }

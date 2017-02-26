@@ -1,5 +1,9 @@
 package com.tomash.contactgetter.interfaces;
 
+import android.content.Context;
+
+import com.tomash.contactgetter.entity.Contact;
+
 /**
  * Created by Andrew on 24.02.2017.
  */
@@ -10,12 +14,12 @@ public abstract class WithLabel implements Labelable {
     private int labelId;
     private String labelName;
 
-    public WithLabel(String mainData, int contactId, int labelId, String labelName) {
+    public WithLabel(String mainData, int contactId, int labelId, String labelName, Context ctx) {
         this.mainData = mainData;
         this.contactId = contactId;
         this.labelId = labelId;
         if (labelName == null)
-            this.labelName = getLabelNameMap().get(labelId);
+            this.labelName = ctx.getString(getLabelNameResId(labelId));
         else
             this.labelName = labelName;
     }

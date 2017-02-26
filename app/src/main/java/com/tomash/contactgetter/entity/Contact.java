@@ -15,6 +15,7 @@ public class Contact {
     private List<IMAddress> imAddressesList = new ArrayList<>();
     private List<Relation> relationsList = new ArrayList<>();
     private List<SpecialDate> specialDatesList = new ArrayList<>();
+    private List<Group> groupList = new ArrayList<>();
     private String note = "";
     private String nickName = "";
     private String sipAddress = "";
@@ -191,6 +192,16 @@ public class Contact {
     public Contact setNameData(NameData nameData) {
         if (nameData == null) return this;
         this.nameData = nameData;
+        return this;
+    }
+
+    public List<Group> getGroupList() {
+        return groupList;
+    }
+
+    public Contact setGroupList(List<Group> groupList) {
+        if(groupList==null) return this;
+        this.groupList = groupList;
         return this;
     }
 }

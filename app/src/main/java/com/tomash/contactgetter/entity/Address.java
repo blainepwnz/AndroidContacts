@@ -1,32 +1,23 @@
 package com.tomash.contactgetter.entity;
 
-import android.util.SparseArray;
+import android.content.Context;
+import android.provider.ContactsContract;
 
 import com.tomash.contactgetter.interfaces.WithLabel;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by andrew on 2/24/17.
  */
 
 public class Address extends WithLabel {
-    private static SparseArray<String> addressMap;
-    static {
-        addressMap = new SparseArray<>();
-        addressMap.put(1,"Home");
-        addressMap.put(2,"Work");
-        addressMap.put(3,"Other");
+
+
+    public Address(String mainData, int contactId, int labelId, String labelName, Context ctx) {
+        super(mainData, contactId, labelId, labelName, ctx);
     }
 
     @Override
-    public SparseArray<String> getLabelNameMap() {
-        return addressMap;
-    }
-
-    public Address(String mainData, int contactId, int labelId, String labelName) {
-
-        super(mainData, contactId, labelId, labelName);
+    public int getLabelNameResId(int id) {
+        return ContactsContract.CommonDataKinds.StructuredPostal.getTypeLabelResource(id);
     }
 }

@@ -16,5 +16,6 @@ public enum FieldType {
     NICKNAME,
     ORGANIZATION,
     SIP,
-    NAME_DATA
+    NAME_DATA,
+    GROUPS
 }

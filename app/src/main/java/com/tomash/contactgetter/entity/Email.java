@@ -1,5 +1,7 @@
 package com.tomash.contactgetter.entity;
 
+import android.content.Context;
+import android.provider.ContactsContract;
 import android.util.SparseArray;
 
 import com.tomash.contactgetter.interfaces.WithLabel;
@@ -10,20 +12,12 @@ import com.tomash.contactgetter.interfaces.WithLabel;
 
 public class Email extends WithLabel {
 
-    private static SparseArray<String> emailMap;
-    static {
-        emailMap = new SparseArray<>();
-        emailMap.put(1,"Home");
-        emailMap.put(2,"Work");
-        emailMap.put(3,"Other");
-    }
-
-    public Email(String mainData, int contactId, int labelId, String labelName) {
-        super(mainData, contactId, labelId, labelName);
+    public Email(String mainData, int contactId, int labelId, String labelName, Context ctx) {
+        super(mainData, contactId, labelId, labelName, ctx);
     }
 
     @Override
-    public SparseArray<String> getLabelNameMap() {
-        return emailMap;
+    public int getLabelNameResId(int id) {
+        return ContactsContract.CommonDataKinds.Email.getTypeLabelResource(id);
     }
 }

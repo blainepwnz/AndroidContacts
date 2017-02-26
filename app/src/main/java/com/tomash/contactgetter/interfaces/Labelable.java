@@ -9,5 +9,10 @@ import java.util.Map;
  */
 
 public interface Labelable {
-    SparseArray<String> getLabelNameMap();
+    /**
+     * Gets label resource by id
+     * @param id id of this label
+     * @return string id of this label
+     */
+    int getLabelNameResId(int id);
 }
