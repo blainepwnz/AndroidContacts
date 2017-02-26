@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
-def buildName = "1.0.0"
-def buildCode = 1
+def buildName = "1.0.1"
+def buildCode = 2
 
 android {
     compileSdkVersion 25
