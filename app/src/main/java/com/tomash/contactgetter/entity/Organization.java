@@ -27,4 +27,23 @@ public class Organization {
         this.title = title;
         return this;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Organization that = (Organization) o;
+
+        if (!name.equals(that.name)) return false;
+        return title.equals(that.title);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + title.hashCode();
+        return result;
+    }
 }

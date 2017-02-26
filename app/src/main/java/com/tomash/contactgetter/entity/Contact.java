@@ -204,4 +204,36 @@ public class Contact {
         this.groupList = groupList;
         return this;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Contact contact = (Contact) o;
+
+        if (contactId != contact.contactId) return false;
+        if (lastModificationDate != contact.lastModificationDate) return false;
+        if (!emailList.equals(contact.emailList)) return false;
+        if (!phoneList.equals(contact.phoneList)) return false;
+        if (!addressesList.equals(contact.addressesList)) return false;
+        if (!websitesList.equals(contact.websitesList)) return false;
+        if (!imAddressesList.equals(contact.imAddressesList)) return false;
+        if (!relationsList.equals(contact.relationsList)) return false;
+        if (!specialDatesList.equals(contact.specialDatesList)) return false;
+        if (!groupList.equals(contact.groupList)) return false;
+        if (!note.equals(contact.note)) return false;
+        if (!nickName.equals(contact.nickName)) return false;
+        if (!sipAddress.equals(contact.sipAddress)) return false;
+        if (!photoUri.equals(contact.photoUri)) return false;
+        if (!organization.equals(contact.organization)) return false;
+        if (!nameData.equals(contact.nameData)) return false;
+        return compositeName.equals(contact.compositeName);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return contactId;
+    }
 }

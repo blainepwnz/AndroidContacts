@@ -104,4 +104,28 @@ public class NameData {
         this.phoneticLast = phoneticLast;
         return this;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NameData nameData = (NameData) o;
+
+        if (!fullName.equals(nameData.fullName)) return false;
+        if (!firstName.equals(nameData.firstName)) return false;
+        if (!surname.equals(nameData.surname)) return false;
+        if (!namePrefix.equals(nameData.namePrefix)) return false;
+        if (!middleName.equals(nameData.middleName)) return false;
+        if (!nameSuffix.equals(nameData.nameSuffix)) return false;
+        if (!phoneticFirst.equals(nameData.phoneticFirst)) return false;
+        if (!phoneticMiddle.equals(nameData.phoneticMiddle)) return false;
+        return phoneticLast.equals(nameData.phoneticLast);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return fullName.hashCode();
+    }
 }

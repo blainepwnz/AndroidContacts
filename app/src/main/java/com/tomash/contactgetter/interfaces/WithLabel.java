@@ -40,4 +40,23 @@ public abstract class WithLabel implements Labelable {
     public String getLabelName() {
         return labelName;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        WithLabel withLabel = (WithLabel) o;
+
+        if (contactId != withLabel.contactId) return false;
+        if (labelId != withLabel.labelId) return false;
+        if (!mainData.equals(withLabel.mainData)) return false;
+        return labelName.equals(withLabel.labelName);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return mainData.hashCode();
+    }
 }
