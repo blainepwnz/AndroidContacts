@@ -80,7 +80,6 @@ For example , query that gets all contacts with photo and containing sequence "a
  Get contact with specific phonenumber
 
         new ContactsGetter.Builder(ctx)
-            .addField(FieldType.PHONE_NUMBERS)
             .withPhone("123456789")
             .firstOrNull();   
 
