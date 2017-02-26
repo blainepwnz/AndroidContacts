@@ -1,7 +1,7 @@
 package com.tomash.contactgetter.main;
 
 /**
- * This enum contains field type that can be ignored while querying contacts.
+ * This enum contains field type that can be enabled while querying contacts.
  */
 
 public enum FieldType {
@@ -12,5 +12,9 @@ public enum FieldType {
     IM_ADDRESSES,
     SPECIAL_DATES,
     NOTES,
-    RELATIONS
+    RELATIONS,
+    NICKNAME,
+    ORGANIZATION,
+    SIP,
+    NAME_DATA
 }

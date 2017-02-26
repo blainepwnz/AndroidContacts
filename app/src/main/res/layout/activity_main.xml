@@ -13,6 +13,11 @@
         android:layout_height="wrap_content"
         android:text="sniff"
         android:layout_centerInParent="true"/>
+    <ImageView
+        android:id="@+id/photo_iv"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        />
 
 
 </RelativeLayout>
