@@ -18,7 +18,7 @@ Gradle Dependency
 **Step 2.** Add the dependency
 ```
 	dependencies {
-		compile 'com.tomash:androidcontacts:1.0.2'
+		compile 'com.tomash:androidcontacts:1.0.3'
 	}
 ```
 
