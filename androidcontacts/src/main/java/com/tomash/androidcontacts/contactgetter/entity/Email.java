@@ -19,4 +19,7 @@ public class Email extends WithLabel {
     public int getLabelNameResId(int id) {
         return ContactsContract.CommonDataKinds.Email.getTypeLabelResource(id);
     }
+
+    public Email() {
+    }
 }

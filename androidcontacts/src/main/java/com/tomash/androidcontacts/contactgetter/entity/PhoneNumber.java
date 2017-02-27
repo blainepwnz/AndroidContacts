@@ -20,4 +20,7 @@ public class PhoneNumber extends WithLabel {
     public int getLabelNameResId(int id) {
         return ContactsContract.CommonDataKinds.Phone.getTypeLabelResource(id);
     }
+
+    public PhoneNumber() {
+    }
 }

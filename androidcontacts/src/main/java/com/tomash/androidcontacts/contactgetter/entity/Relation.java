@@ -20,4 +20,7 @@ public class Relation extends WithLabel {
     public int getLabelNameResId(int id) {
         return ContactsContract.CommonDataKinds.Relation.getTypeLabelResource(id);
     }
+
+    public Relation() {
+    }
 }

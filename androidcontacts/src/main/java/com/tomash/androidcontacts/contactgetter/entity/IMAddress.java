@@ -19,4 +19,7 @@ public class IMAddress extends WithLabel {
     public int getLabelNameResId(int id) {
         return ContactsContract.CommonDataKinds.Im.getProtocolLabelResource(id);
     }
+
+    public IMAddress() {
+    }
 }

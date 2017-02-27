@@ -20,4 +20,6 @@ public class Address extends WithLabel {
     public int getLabelNameResId(int id) {
         return ContactsContract.CommonDataKinds.StructuredPostal.getTypeLabelResource(id);
     }
+
+    public Address() {}
 }

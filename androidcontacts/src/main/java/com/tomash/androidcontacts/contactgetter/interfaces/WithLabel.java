@@ -22,6 +22,7 @@ public abstract class WithLabel implements Labelable {
             this.labelName = labelName;
     }
 
+    public WithLabel(){}
 
     public String getMainData() {
         return mainData;
@@ -51,6 +52,26 @@ public abstract class WithLabel implements Labelable {
         if (!mainData.equals(withLabel.mainData)) return false;
         return labelName.equals(withLabel.labelName);
 
+    }
+
+    public WithLabel setMainData(String mainData) {
+        this.mainData = mainData;
+        return this;
+    }
+
+    public WithLabel setContactId(int contactId) {
+        this.contactId = contactId;
+        return this;
+    }
+
+    public WithLabel setLabelId(int labelId) {
+        this.labelId = labelId;
+        return this;
+    }
+
+    public WithLabel setLabelName(String labelName) {
+        this.labelName = labelName;
+        return this;
     }
 
     @Override

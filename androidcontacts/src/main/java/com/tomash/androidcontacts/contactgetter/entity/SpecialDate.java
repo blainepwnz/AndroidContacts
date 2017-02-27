@@ -19,4 +19,7 @@ public class SpecialDate extends WithLabel {
     public int getLabelNameResId(int id) {
         return ContactsContract.CommonDataKinds.Event.getTypeResource(id);
     }
+
+    public SpecialDate() {
+    }
 }

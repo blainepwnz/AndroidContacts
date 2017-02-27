@@ -2,8 +2,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 
 
-def buildName = "1.0.3"
-def buildCode = 4
+def buildName = "1.0.4"
+def buildCode = 5
 def mSiteUrl = 'https://github.com/blainepwnz/AndroidContacts'
 def mGitUrl = 'https://github.com/blainepwnz/AndroidContacts.git'
 
