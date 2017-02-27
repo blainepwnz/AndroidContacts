@@ -1,6 +1,6 @@
 package com.tomash.androidcontacts.contactgetter.interfaces;
 
-import com.tomash.androidcontacts.contactgetter.entity.Contact;
+import com.tomash.androidcontacts.contactgetter.entity.ContactData;
 
 /**
  * This interface defines ability to filter Contacts
@@ -14,5 +14,5 @@ public interface Filterable {
      * @param contact contact what should get exercised with filter
      * @return true if should not be filtered , false otherwise
      */
-    boolean passedFilter(Contact contact);
+    boolean passedFilter(ContactData contact);
 }

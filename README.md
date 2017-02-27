@@ -19,11 +19,11 @@ Gradle Dependency
 **Step 2.** Add the dependency
 ```
 	dependencies {
-		compile 'com.tomash:androidcontacts:1.0.4'
+		compile 'com.tomash:androidcontacts:1.0.5'
 	}
 ```
 
----
+
 
 
  Basic Usage
@@ -37,6 +37,10 @@ Need to add permisson to read contacts in manifest.
 <uses-permission android:name="android.permission.READ_CONTACTS"/>
 ```
 
+##### Basic usage
+1. Get all contacts from android device
+2. Get specific data from contacts
+3. Querying inside contacts
 #### Type of fields you can get
 
 * Phones
@@ -52,6 +56,7 @@ Need to add permisson to read contacts in manifest.
 * Relations
 * Photo
 * Instant Messenger Addresses
+* Lookup key
 
 Easiest way to get all data by one time:
 ```
@@ -65,23 +70,67 @@ Filter by contacts only with numbers
           .onlyWithPhones()
 		  .buildList();          
 ```
----
+
+
 Querying
 ------------------
 Library supports multi quering by contacts,plus you can implement your own filters.
 
 For example , query that gets all contacts with photo and containing sequence "abc" in name.
 ```
-   new ContactsGetter.Builder(ctx)
-            .onlyWithPhotos()
-            .addField(FieldType.EMAILS,FieldType.ADDRESS)
-            .withNameLike("abc");
+new ContactsGetter.Builder(ctx)
+    .onlyWithPhotos()
+    .addField(FieldType.EMAILS,FieldType.ADDRESS)
+    .withNameLike("abc");
 ```              
  
- Get contact with specific phonenumber
+ Get contact with specific phone number.
+ firstOrNull returns only one Contact if found and null otherwise.
+```
+new ContactsGetter.Builder(ctx)
+    .withPhone("123456789")
+    .firstOrNull();   
+```
 
-        new ContactsGetter.Builder(ctx)
-            .withPhone("123456789")
-            .firstOrNull();   
+Get contact by local contact id
+```
+ContactData contactData  = new ContactsGetter.Builder(ctx)
+   .addField(FieldType.EMAILS,FieldType.ADDRESS,FieldType.NAME_DATA)
+   .getById(123);
+```    
 
-firstOrNull returns only one Contact if found and null otherwise.
+
+
+Using custom Contact object
+------------------
+#####How to use library with your custom contact class?
+1. Inherit from ContactData
+2. Add empty constructor
+3. That's all!
+
+```
+public class MyAwesomeContactObject extends ContactData {
+    private String mySuperField;
+
+    //Important to add empty constructor
+    public MyAwesomeContactObject() {
+    }
+
+    //getters , setters , any logic you wish
+}
+```
+##### How to use it after?
+```
+List<MyAwesomeContactObject> objects  = new ContactsGetter.Builder(ctx)
+    .onlyWithPhones()
+    .onlyWithPhotos()
+    .withEmailLike("@gmail.com")
+    .buildList(MyAwesomeContactObject.class);
+```
+
+Whats new?
+------------------
+### 1.0.5 
+> * Added support of custom Contact objects
+> * Added lookup key
+

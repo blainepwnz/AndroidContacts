@@ -1,7 +1,7 @@
 package com.tomash.androidcontacts.contactgetter.utils;
 
 import com.tomash.androidcontacts.contactgetter.entity.Address;
-import com.tomash.androidcontacts.contactgetter.entity.Contact;
+import com.tomash.androidcontacts.contactgetter.entity.ContactData;
 import com.tomash.androidcontacts.contactgetter.entity.Email;
 import com.tomash.androidcontacts.contactgetter.entity.PhoneNumber;
 import com.tomash.androidcontacts.contactgetter.interfaces.BaseFilter;
@@ -24,7 +24,7 @@ public class FilterUtils {
             }
 
             @Override
-            protected List<PhoneNumber> getFilterContainer(Contact contact) {
+            protected List<PhoneNumber> getFilterContainer(ContactData contact) {
                 return contact.getPhoneList();
             }
 
@@ -48,7 +48,7 @@ public class FilterUtils {
             }
 
             @Override
-            protected List<PhoneNumber> getFilterContainer(Contact contact) {
+            protected List<PhoneNumber> getFilterContainer(ContactData contact) {
                 return contact.getPhoneList();
             }
 
@@ -72,7 +72,7 @@ public class FilterUtils {
             }
 
             @Override
-            protected List<Email> getFilterContainer(Contact contact) {
+            protected List<Email> getFilterContainer(ContactData contact) {
                 return contact.getEmailList();
             }
 
@@ -96,7 +96,7 @@ public class FilterUtils {
             }
 
             @Override
-            protected List<Email> getFilterContainer(Contact contact) {
+            protected List<Email> getFilterContainer(ContactData contact) {
                 return contact.getEmailList();
             }
 
@@ -120,7 +120,7 @@ public class FilterUtils {
             }
 
             @Override
-            protected List<Address> getFilterContainer(Contact contact) {
+            protected List<Address> getFilterContainer(ContactData contact) {
                 return contact.getAddressesList();
             }
 
@@ -144,7 +144,7 @@ public class FilterUtils {
             }
 
             @Override
-            protected List<Address> getFilterContainer(Contact contact) {
+            protected List<Address> getFilterContainer(ContactData contact) {
                 return contact.getAddressesList();
             }
 
@@ -155,15 +155,15 @@ public class FilterUtils {
         };
     }
 
-    public static BaseFilter<Contact, String> withNoteLike(final String noteLike) {
-        return new FieldFilter<Contact, String>() {
+    public static BaseFilter<ContactData, String> withNoteLike(final String noteLike) {
+        return new FieldFilter<ContactData, String>() {
             @Override
             protected String getFilterPattern() {
                 return noteLike;
             }
 
             @Override
-            protected String getFilterData(Contact data) {
+            protected String getFilterData(ContactData data) {
                 return data.getNote();
             }
 
@@ -174,15 +174,15 @@ public class FilterUtils {
         };
     }
 
-    public static BaseFilter<Contact, String> withNote(final String note) {
-        return new FieldFilter<Contact, String>() {
+    public static BaseFilter<ContactData, String> withNote(final String note) {
+        return new FieldFilter<ContactData, String>() {
             @Override
             protected String getFilterPattern() {
                 return note;
             }
 
             @Override
-            protected String getFilterData(Contact data) {
+            protected String getFilterData(ContactData data) {
                 return data.getNote();
             }
 

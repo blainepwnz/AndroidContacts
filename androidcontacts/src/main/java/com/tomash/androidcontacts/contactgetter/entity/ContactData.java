@@ -6,8 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Contact {
+public abstract class ContactData {
     private int contactId;
+    private String lookupKey;
     private List<Email> emailList = new ArrayList<>();
     private List<PhoneNumber> phoneList = new ArrayList<>();
     private List<Address> addressesList = new ArrayList<>();
@@ -30,7 +31,7 @@ public class Contact {
         return contactId;
     }
 
-    public Contact setContactId(int contactId) {
+    public ContactData setContactId(int contactId) {
         this.contactId = contactId;
         return this;
     }
@@ -39,7 +40,7 @@ public class Contact {
         return emailList;
     }
 
-    public Contact setEmailList(List<Email> emailList) {
+    public ContactData setEmailList(List<Email> emailList) {
         if (emailList == null) return this;
         this.emailList = emailList;
         return this;
@@ -49,7 +50,7 @@ public class Contact {
         return phoneList;
     }
 
-    public Contact setPhoneList(List<PhoneNumber> phoneList) {
+    public ContactData setPhoneList(List<PhoneNumber> phoneList) {
         if (phoneList == null) return this;
         this.phoneList = phoneList;
         return this;
@@ -62,7 +63,7 @@ public class Contact {
         return photoUri;
     }
 
-    public Contact setPhotoUri(Uri photoUri) {
+    public ContactData setPhotoUri(Uri photoUri) {
         if (photoUri == null) return this;
         this.photoUri = photoUri;
         return this;
@@ -72,7 +73,7 @@ public class Contact {
         return addressesList;
     }
 
-    public Contact setAddressesList(List<Address> addressesList) {
+    public ContactData setAddressesList(List<Address> addressesList) {
         if (addressesList == null) return this;
         this.addressesList = addressesList;
         return this;
@@ -82,7 +83,7 @@ public class Contact {
         return compositeName;
     }
 
-    public Contact setCompositeName(String compositeName) {
+    public ContactData setCompositeName(String compositeName) {
         this.compositeName = compositeName;
         return this;
     }
@@ -91,7 +92,7 @@ public class Contact {
         return websitesList;
     }
 
-    public Contact setWebsitesList(List<String> websitesList) {
+    public ContactData setWebsitesList(List<String> websitesList) {
         if (websitesList == null) return this;
         this.websitesList = websitesList;
         return this;
@@ -101,7 +102,7 @@ public class Contact {
         return note;
     }
 
-    public Contact setNote(String note) {
+    public ContactData setNote(String note) {
         if (note == null) return this;
         this.note = note;
         return this;
@@ -120,7 +121,7 @@ public class Contact {
         return lastModificationDate;
     }
 
-    public Contact setLastModificationDate(long lastModificationDate) {
+    public ContactData setLastModificationDate(long lastModificationDate) {
         this.lastModificationDate = lastModificationDate;
         return this;
     }
@@ -129,7 +130,7 @@ public class Contact {
         return imAddressesList;
     }
 
-    public Contact setImAddressesList(List<IMAddress> imAddressesList) {
+    public ContactData setImAddressesList(List<IMAddress> imAddressesList) {
         if (imAddressesList == null) return this;
         this.imAddressesList = imAddressesList;
         return this;
@@ -139,7 +140,7 @@ public class Contact {
         return relationsList;
     }
 
-    public Contact setRelationsList(List<Relation> relationsList) {
+    public ContactData setRelationsList(List<Relation> relationsList) {
         if (relationsList == null) return this;
         this.relationsList = relationsList;
         return this;
@@ -149,7 +150,7 @@ public class Contact {
         return specialDatesList;
     }
 
-    public Contact setSpecialDatesList(List<SpecialDate> specialDatesList) {
+    public ContactData setSpecialDatesList(List<SpecialDate> specialDatesList) {
         if (specialDatesList == null) return this;
         this.specialDatesList = specialDatesList;
         return this;
@@ -159,7 +160,7 @@ public class Contact {
         return nickName;
     }
 
-    public Contact setNickName(String nickName) {
+    public ContactData setNickName(String nickName) {
         if (nickName == null) return this;
         this.nickName = nickName;
         return this;
@@ -169,7 +170,7 @@ public class Contact {
         return sipAddress;
     }
 
-    public Contact setSipAddress(String sipAddress) {
+    public ContactData setSipAddress(String sipAddress) {
         if (sipAddress == null) return this;
         this.sipAddress = sipAddress;
         return this;
@@ -179,7 +180,7 @@ public class Contact {
         return organization;
     }
 
-    public Contact setOrganization(Organization organization) {
+    public ContactData setOrganization(Organization organization) {
         if (organization == null) return this;
         this.organization = organization;
         return this;
@@ -189,7 +190,7 @@ public class Contact {
         return nameData;
     }
 
-    public Contact setNameData(NameData nameData) {
+    public ContactData setNameData(NameData nameData) {
         if (nameData == null) return this;
         this.nameData = nameData;
         return this;
@@ -199,7 +200,7 @@ public class Contact {
         return groupList;
     }
 
-    public Contact setGroupList(List<Group> groupList) {
+    public ContactData setGroupList(List<Group> groupList) {
         if(groupList==null) return this;
         this.groupList = groupList;
         return this;
@@ -210,7 +211,7 @@ public class Contact {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Contact contact = (Contact) o;
+        ContactData contact = (ContactData) o;
 
         if (contactId != contact.contactId) return false;
         if (lastModificationDate != contact.lastModificationDate) return false;
@@ -230,6 +231,15 @@ public class Contact {
         if (!nameData.equals(contact.nameData)) return false;
         return compositeName.equals(contact.compositeName);
 
+    }
+
+    public String getLookupKey() {
+        return lookupKey;
+    }
+
+    public ContactData setLookupKey(String lookupKey) {
+        this.lookupKey = lookupKey;
+        return this;
     }
 
     @Override

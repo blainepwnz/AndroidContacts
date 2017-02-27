@@ -1,6 +1,6 @@
 package com.tomash.androidcontacts.contactgetter.interfaces;
 
-import com.tomash.androidcontacts.contactgetter.entity.Contact;
+import com.tomash.androidcontacts.contactgetter.entity.ContactData;
 
 import java.util.List;
 
@@ -20,10 +20,10 @@ public abstract class ListFilter<T,V> extends BaseFilter<T,V> {
      * @param contact contact object where from to get data
      * @return list with target data
      */
-    protected abstract List<T> getFilterContainer(Contact contact);
+    protected abstract List<T> getFilterContainer(ContactData contact);
 
     @Override
-    public boolean passedFilter(Contact contact) {
+    public boolean passedFilter(ContactData contact) {
         for (T t : getFilterContainer(contact)) {
             if (getFilterCondition(getFilterData(t), getFilterPattern()))
                 return true;

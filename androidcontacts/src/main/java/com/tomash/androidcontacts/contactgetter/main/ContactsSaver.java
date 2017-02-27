@@ -6,7 +6,7 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.ContactsContract;
 
-import com.tomash.androidcontacts.contactgetter.entity.Contact;
+import com.tomash.androidcontacts.contactgetter.entity.ContactData;
 
 import java.util.ArrayList;
 
@@ -26,7 +26,7 @@ class ContactsSaver {
         return deleted > 0;
     }
 
-    public int addContact(Contact contact) {
+    public int addContact(ContactData contact) {
         ArrayList<ContentProviderOperation> op_list = new ArrayList<ContentProviderOperation>();
 //        Map<String, Integer> mobileLabelMap = Util.getLabelTypeMap(true);
 //        Map<String, Integer> otherLabelMap = Util.getLabelTypeMap(false);

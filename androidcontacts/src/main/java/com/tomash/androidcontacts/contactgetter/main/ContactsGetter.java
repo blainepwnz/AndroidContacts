@@ -8,7 +8,7 @@ import android.provider.ContactsContract;
 import android.util.SparseArray;
 
 import com.tomash.androidcontacts.contactgetter.entity.Address;
-import com.tomash.androidcontacts.contactgetter.entity.Contact;
+import com.tomash.androidcontacts.contactgetter.entity.ContactData;
 import com.tomash.androidcontacts.contactgetter.entity.Email;
 import com.tomash.androidcontacts.contactgetter.entity.Group;
 import com.tomash.androidcontacts.contactgetter.entity.IMAddress;
@@ -22,6 +22,7 @@ import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
 import com.tomash.androidcontacts.contactgetter.interfaces.WithLabelCreator;
 import com.tomash.androidcontacts.contactgetter.utils.FilterUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -30,21 +31,29 @@ import java.util.List;
 public final class ContactsGetter {
     private ContentResolver mResolver;
     private Context mCtx;
-    private List<FieldType> mEnabledFields = new ArrayList<>();
+    private List<FieldType> mEnabledFields;
+    private String[] mSelectionArgs;
+    private String mSorting;
+    private String mSelection;
     final private String MAIN_DATA_KEY = "data1";
     final private String LABEL_DATA_KEY = "data2";
     final private String CUSTOM_LABEL_DATA_KEY = "data3";
     final private String ID_KEY = "contact_id";
+    private Class<? extends ContactData> mContactDataClass;
 
 
-    public ContactsGetter(Context ctx, List<FieldType> enabledFields) {
-        mCtx = ctx;
+    public ContactsGetter(Context ctx, List<FieldType> enabledFields, String sorting, String[] selectionArgs, String selection) {
+        this.mCtx = ctx;
         this.mResolver = ctx.getContentResolver();
         this.mEnabledFields = enabledFields;
+        this.mSelectionArgs = selectionArgs;
+        this.mSorting = sorting;
+        this.mSelection = selection;
     }
 
-    private Cursor getAllContactsCursor(String ordering) {
-        return getContactsCursorWithSelection(ordering, null, null);
+    private ContactsGetter setContactDataClass(Class<? extends ContactData> mContactDataClass) {
+        this.mContactDataClass = mContactDataClass;
+        return this;
     }
 
     private Cursor getContactsCursorWithSelection(String ordering, String selection, String[] selectionArgs) {
@@ -52,8 +61,29 @@ public final class ContactsGetter {
             null, selection, selectionArgs, ordering);
     }
 
-    private List<Contact> getContacts(final Cursor c) {
-        List<Contact> contactsList = new ArrayList<>();
+    private <T extends ContactData> T getContactData() {
+        if (mContactDataClass == null) {
+            return (T) new ContactData() {
+            };
+        }
+        try {
+            return (T) mContactDataClass.getConstructor().newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    private <T extends ContactData> List<T> getContacts() {
+        Cursor c = getContactsCursorWithSelection(mSorting, mSelection, mSelectionArgs);
+        List<T> contactsList = new ArrayList<>();
         SparseArray<List<PhoneNumber>> phonesDataMap = mEnabledFields.contains(FieldType.PHONE_NUMBERS) ? getDataMap(getCursorFromUri(ContactsContract.CommonDataKinds.Phone.CONTENT_URI), new WithLabelCreator<PhoneNumber>() {
             @Override
             public PhoneNumber create(String mainData, int contactId, int labelId, String labelName) {
@@ -96,9 +126,11 @@ public final class ContactsGetter {
             int id = c.getInt(c.getColumnIndex(ContactsContract.Contacts._ID));
             long date = c.getLong(c.getColumnIndex(ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP));
             String photoUriString = c.getString(c.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
+            String lookupKey = c.getString(c.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
             Uri photoUri = photoUriString == null ? Uri.EMPTY : Uri.parse(c.getString(c.getColumnIndex(ContactsContract.Contacts.PHOTO_URI)));
-            contactsList.add(new Contact()
+            contactsList.add((T) getContactData()
                 .setContactId(id)
+                .setLookupKey(lookupKey)
                 .setLastModificationDate(date)
                 .setPhoneList(phonesDataMap.get(id))
                 .setAddressesList(addressDataMap.get(id))
@@ -419,7 +451,8 @@ public final class ContactsGetter {
 
         /**
          * Searches for contacts with this email
-         *Implicitly adds Email field
+         * Implicitly adds Email field
+         *
          * @param email email to search for
          */
         public Builder withEmail(final String email) {
@@ -430,7 +463,8 @@ public final class ContactsGetter {
 
         /**
          * Searches for contacts that contains sequence
-         *Implicitly adds Email field
+         * Implicitly adds Email field
+         *
          * @param sequence sequence to search for
          */
         public Builder withEmailLike(final String sequence) {
@@ -442,6 +476,7 @@ public final class ContactsGetter {
         /**
          * Searches for contacts with this number
          * Implicitly adds Address field
+         *
          * @param number number to search for
          */
         public Builder withAddress(final String number) {
@@ -453,6 +488,7 @@ public final class ContactsGetter {
         /**
          * Searches for addresses that contains this sequence
          * Implicitly adds Address field
+         *
          * @param sequence sequence to search for
          */
         public Builder withAddressLike(final String sequence) {
@@ -462,10 +498,10 @@ public final class ContactsGetter {
         }
 
 
-        private List<Contact> applyFilters(List<Contact> contactList) {
+        private <T extends ContactData> List<T> applyFilters(List<T> contactList) {
             for (BaseFilter filter : mFilterList) {
-                for (Iterator<Contact> iterator = contactList.iterator(); iterator.hasNext(); ) {
-                    Contact contact = iterator.next();
+                for (Iterator<T> iterator = contactList.iterator(); iterator.hasNext(); ) {
+                    ContactData contact = iterator.next();
                     if (!filter.passedFilter(contact))
                         iterator.remove();
                 }
@@ -516,26 +552,39 @@ public final class ContactsGetter {
             return this;
         }
 
+        private ContactsGetter initGetter() {
+            ContactsGetter getter;
+            if (mSelectionBuilder.length() == 0)
+                getter = new ContactsGetter(mCtx, mEnabledFields, mSortOrder.getSorting(), null, null);
+            else
+                getter = new ContactsGetter(mCtx, mEnabledFields, mSortOrder.getSorting(), generateSelectionArgs(), generateSelection());
+            return getter;
+        }
+
+
+        /**
+         * Builds list of contacts
+         * @param T class of object you want to get data
+         */
+        public <T extends ContactData> List<T> buildList(Class<? extends ContactData> T) {
+            return applyFilters((List<T>) initGetter()
+                .setContactDataClass(T)
+                .getContacts());
+        }
+
         /**
          * Builds list of contacts
          */
-        public List<Contact> buildList() {
-            ContactsGetter getter = new ContactsGetter(mCtx, mEnabledFields);
-            Cursor mainCursor;
-            if (mSelectionBuilder.length() == 0)
-                mainCursor = getter.getAllContactsCursor(mSortOrder.getSorting());
-            else
-                mainCursor = getter.getContactsCursorWithSelection(mSortOrder.getSorting(), generateSelection(), generateSelectionArgs());
-            return applyFilters(getter.getContacts(mainCursor));
+        public List<ContactData> buildList() {
+            return applyFilters(initGetter().getContacts());
         }
-
         /**
          * Gets contact by local id
          *
          * @param id id to search for
          * @return contact with data specified by options or null if no contact with this id
          */
-        public Contact getById(int id) {
+        public ContactData getById(int id) {
             if (mSelectionBuilder.length() != 0)
                 mSelectionBuilder.append(" AND ");
             mSelectionBuilder.append(ContactsContract.CommonDataKinds.Phone._ID)
@@ -545,10 +594,38 @@ public final class ContactsGetter {
         }
 
         /**
+         * Gets contact by local id
+         *
+         * @param id id to search for
+         * @param T class of object you want to get data
+         * @return contact with data specified by options or null if no contact with this id
+         */
+        public<T extends ContactData> T getById(int id,Class<T> T) {
+            if (mSelectionBuilder.length() != 0)
+                mSelectionBuilder.append(" AND ");
+            mSelectionBuilder.append(ContactsContract.CommonDataKinds.Phone._ID)
+                .append(" = ?");
+            mParamsList.add(String.valueOf(id));
+            return firstOrNull(T);
+        }
+
+        /**
          * Get first contact of null if no contacts with these params
          */
-        public Contact firstOrNull() {
-            List<Contact> contacts = buildList();
+        public ContactData firstOrNull() {
+            List<ContactData> contacts = buildList();
+            if (contacts.isEmpty())
+                return null;
+            else
+                return contacts.get(0);
+        }
+
+        /**
+         * Get first contact of null if no contacts with these params
+         * @param T class of object you want to get data
+         */
+        public <T extends ContactData> T firstOrNull(Class<T> T) {
+            List<T> contacts = buildList(T);
             if (contacts.isEmpty())
                 return null;
             else
