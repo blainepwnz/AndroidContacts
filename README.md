@@ -1,7 +1,8 @@
-AndroidContactProvider
+AndroidContacts
 ===================
 ----------------------------------
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/blainepwnz/AndroidContacts/blob/master/LICENSE.txt)
+[ ![Download](https://api.bintray.com/packages/blainepwnz/maven/androidcontacts/images/download.svg) ](https://bintray.com/blainepwnz/maven/androidcontacts/_latestVersion)
 
 
 Gradle Dependency
@@ -18,7 +19,7 @@ Gradle Dependency
 **Step 2.** Add the dependency
 ```
 	dependencies {
-		compile 'com.tomash:androidcontacts:1.0.3'
+		compile 'com.tomash:androidcontacts:1.0.4'
 	}
 ```
 
