@@ -17,7 +17,7 @@ public class PhoneNumber extends WithLabel {
 
 
     @Override
-    public String getLabelNameResId(Context ctx,int id) {
+    protected String getLabelNameResId(Context ctx,int id) {
         return ctx.getString(ContactsContract.CommonDataKinds.Phone.getTypeLabelResource(id));
     }
 

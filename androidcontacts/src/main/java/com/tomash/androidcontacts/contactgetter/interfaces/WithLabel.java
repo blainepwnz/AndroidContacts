@@ -6,7 +6,7 @@ import android.content.Context;
  * Created by Andrew on 24.02.2017.
  */
 
-public abstract class WithLabel implements Labelable {
+public abstract class WithLabel {
     private String mainData;
     private int contactId;
     private int labelId;
@@ -21,6 +21,13 @@ public abstract class WithLabel implements Labelable {
         else
             this.labelName = labelName;
     }
+
+    /**
+     * Gets label resource by id
+     * @param id id of this label
+     * @return string id of this label
+     */
+    protected abstract String getLabelNameResId(Context ctx,int id);
 
     public WithLabel(){}
 
@@ -72,11 +79,6 @@ public abstract class WithLabel implements Labelable {
     public WithLabel setLabelName(String labelName) {
         this.labelName = labelName;
         return this;
-    }
-
-    @Override
-    public int getLabelIdByName(Context ctx,String name) {
-        return 0;
     }
 
     @Override

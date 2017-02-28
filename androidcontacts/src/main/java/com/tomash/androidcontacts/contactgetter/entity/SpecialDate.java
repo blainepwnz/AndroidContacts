@@ -16,8 +16,8 @@ public class SpecialDate extends WithLabel {
     }
 
     @Override
-    public int getLabelNameResId(int id) {
-        return ContactsContract.CommonDataKinds.Event.getTypeResource(id);
+    protected String getLabelNameResId(Context ctx,int id) {
+        return ctx.getString(ContactsContract.CommonDataKinds.Event.getTypeResource(id));
     }
 
     public SpecialDate() {

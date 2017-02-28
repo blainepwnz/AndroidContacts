@@ -17,7 +17,7 @@ public class Relation extends WithLabel {
     }
 
     @Override
-    public String getLabelNameResId(Context ctx,int id) {
+    protected String getLabelNameResId(Context ctx,int id) {
         return ctx.getString(ContactsContract.CommonDataKinds.Relation.getTypeLabelResource(id));
     }
 
