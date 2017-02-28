@@ -3,17 +3,19 @@ package com.tomash.androidcontacts.contactgetter.main;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.net.Uri;
 import android.provider.ContactsContract;
 
 import com.tomash.androidcontacts.contactgetter.entity.ContactData;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by andrew on 2/25/17.
  */
-class ContactsSaver {
+public class ContactsSaver {
     private ContentResolver mResolver;
 
     public ContactsSaver(ContentResolver resolver) {
@@ -25,6 +27,19 @@ class ContactsSaver {
         int deleted = mResolver.delete(uri, null, null);
         return deleted > 0;
     }
+
+    private void insertContacts(List<ContactData> contactDataList) {
+        ArrayList<ContentValues> cvList = new ArrayList<>(100);
+        for (int i = 0; i < contactDataList.size(); i++) {
+            generateInsertOperations(cvList, contactDataList.get(i), i);
+        }
+        mResolver.bulkInsert(ContactsContract.Data.CONTENT_URI, cvList.toArray(new ContentValues[cvList.size()]));
+    }
+
+    private void generateInsertOperations(List<ContentValues> contentValuesList, ContactData contactData, int id) {
+
+    }
+
 
     public int addContact(ContactData contact) {
         ArrayList<ContentProviderOperation> op_list = new ArrayList<ContentProviderOperation>();
@@ -87,6 +102,15 @@ class ContactsSaver {
 //            return Single.just(-1);
         }
         return 1;
+    }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////BUILDER//////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class Builder {
+
+
     }
 
 }
