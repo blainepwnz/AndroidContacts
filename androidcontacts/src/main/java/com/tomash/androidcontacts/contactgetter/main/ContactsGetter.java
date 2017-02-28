@@ -19,7 +19,6 @@ import com.tomash.androidcontacts.contactgetter.entity.Relation;
 import com.tomash.androidcontacts.contactgetter.entity.SpecialDate;
 import com.tomash.androidcontacts.contactgetter.interfaces.BaseFilter;
 import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
-import com.tomash.androidcontacts.contactgetter.interfaces.WithLabelCreator;
 import com.tomash.androidcontacts.contactgetter.utils.FilterUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -331,6 +330,11 @@ public final class ContactsGetter {
         return mResolver.query(ContactsContract.Data.CONTENT_URI,
             null, orgWhere, orgWhereParams, null);
     }
+
+    interface WithLabelCreator<T extends WithLabel> {
+        T create(String mainData, int contactId, int labelId, String labelName);
+    }
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////BUILDER//////////////////////////////////////////////////////////////////////

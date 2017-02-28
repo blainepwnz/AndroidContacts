@@ -16,8 +16,8 @@ public class Email extends WithLabel {
     }
 
     @Override
-    public int getLabelNameResId(int id) {
-        return ContactsContract.CommonDataKinds.Email.getTypeLabelResource(id);
+    public String getLabelNameResId(Context ctx,int id) {
+        return ctx.getString(ContactsContract.CommonDataKinds.Email.getTypeLabelResource(id));
     }
 
     public Email() {

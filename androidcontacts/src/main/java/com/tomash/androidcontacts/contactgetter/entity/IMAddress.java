@@ -16,8 +16,8 @@ public class IMAddress extends WithLabel {
     }
 
     @Override
-    public int getLabelNameResId(int id) {
-        return ContactsContract.CommonDataKinds.Im.getProtocolLabelResource(id);
+    public String getLabelNameResId(Context ctx, int id) {
+        return ctx.getString(ContactsContract.CommonDataKinds.Im.getProtocolLabelResource(id));
     }
 
     public IMAddress() {

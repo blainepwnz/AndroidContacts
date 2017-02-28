@@ -17,8 +17,8 @@ public class Address extends WithLabel {
     }
 
     @Override
-    public int getLabelNameResId(int id) {
-        return ContactsContract.CommonDataKinds.StructuredPostal.getTypeLabelResource(id);
+    public String getLabelNameResId(Context ctx,int id) {
+        return ctx.getString(ContactsContract.CommonDataKinds.StructuredPostal.getTypeLabelResource(id));
     }
 
     public Address() {}

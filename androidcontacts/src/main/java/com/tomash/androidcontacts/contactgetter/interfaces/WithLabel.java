@@ -17,7 +17,7 @@ public abstract class WithLabel implements Labelable {
         this.contactId = contactId;
         this.labelId = labelId;
         if (labelName == null)
-            this.labelName = ctx.getString(getLabelNameResId(labelId));
+            this.labelName = getLabelNameResId(ctx,labelId);
         else
             this.labelName = labelName;
     }
@@ -72,6 +72,11 @@ public abstract class WithLabel implements Labelable {
     public WithLabel setLabelName(String labelName) {
         this.labelName = labelName;
         return this;
+    }
+
+    @Override
+    public int getLabelIdByName(Context ctx,String name) {
+        return 0;
     }
 
     @Override

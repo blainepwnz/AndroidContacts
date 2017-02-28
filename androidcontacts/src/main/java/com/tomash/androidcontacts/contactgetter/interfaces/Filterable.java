@@ -5,7 +5,7 @@ import com.tomash.androidcontacts.contactgetter.entity.ContactData;
 /**
  * This interface defines ability to filter Contacts
  */
-public interface Filterable {
+interface Filterable {
     /**
      * <p>
      * Main method for filtering contacts
