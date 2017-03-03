@@ -132,6 +132,7 @@ Whats new?
 ------------------
 ### 1.0.6
 > * Improved contacts getter performance
+
 ### 1.0.5 
 > * Added support of custom Contact objects
 > * Added lookup key
