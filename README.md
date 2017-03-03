@@ -19,7 +19,7 @@ Gradle Dependency
 **Step 2.** Add the dependency
 ```
 	dependencies {
-		compile 'com.tomash:androidcontacts:1.0.5'
+		compile 'com.tomash:androidcontacts:1.0.6'
 	}
 ```
 
@@ -60,13 +60,13 @@ Need to add permisson to read contacts in manifest.
 
 Easiest way to get all data by one time:
 ```
- new ContactsGetter.Builder(ctx)
+ new ContactsGetterBuilder(ctx)
             .allFields()
             .buildList();
 ```
 Filter by contacts only with numbers
 ```
- new ContactsGetter.Builder(ctx)
+ new ContactsGetterBuilder(ctx)
           .onlyWithPhones()
 		  .buildList();          
 ```
@@ -78,7 +78,7 @@ Library supports multi quering by contacts,plus you can implement your own filte
 
 For example , query that gets all contacts with photo and containing sequence "abc" in name.
 ```
-new ContactsGetter.Builder(ctx)
+new ContactsGetterBuilder(ctx)
     .onlyWithPhotos()
     .addField(FieldType.EMAILS,FieldType.ADDRESS)
     .withNameLike("abc");
@@ -87,14 +87,14 @@ new ContactsGetter.Builder(ctx)
  Get contact with specific phone number.
  firstOrNull returns only one Contact if found and null otherwise.
 ```
-new ContactsGetter.Builder(ctx)
+new ContactsGetterBuilder(ctx)
     .withPhone("123456789")
     .firstOrNull();   
 ```
 
 Get contact by local contact id
 ```
-ContactData contactData  = new ContactsGetter.Builder(ctx)
+ContactData contactData  = new ContactsGetterBuilder(ctx)
    .addField(FieldType.EMAILS,FieldType.ADDRESS,FieldType.NAME_DATA)
    .getById(123);
 ```    
@@ -121,7 +121,7 @@ public class MyAwesomeContactObject extends ContactData {
 ```
 ##### How to use it after?
 ```
-List<MyAwesomeContactObject> objects  = new ContactsGetter.Builder(ctx)
+List<MyAwesomeContactObject> objects  = new ContactsGetterBuilder(ctx)
     .onlyWithPhones()
     .onlyWithPhotos()
     .withEmailLike("@gmail.com")
@@ -130,6 +130,8 @@ List<MyAwesomeContactObject> objects  = new ContactsGetter.Builder(ctx)
 
 Whats new?
 ------------------
+### 1.0.6
+> * Improved contacts getter performance
 ### 1.0.5 
 > * Added support of custom Contact objects
 > * Added lookup key
