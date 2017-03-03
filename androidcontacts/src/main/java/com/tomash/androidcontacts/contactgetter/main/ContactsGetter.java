@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds;
+import android.provider.ContactsContract.CommonDataKinds.Im;
 import android.util.SparseArray;
 
 import com.tomash.androidcontacts.contactgetter.entity.Address;
@@ -17,27 +19,38 @@ import com.tomash.androidcontacts.contactgetter.entity.Organization;
 import com.tomash.androidcontacts.contactgetter.entity.PhoneNumber;
 import com.tomash.androidcontacts.contactgetter.entity.Relation;
 import com.tomash.androidcontacts.contactgetter.entity.SpecialDate;
-import com.tomash.androidcontacts.contactgetter.interfaces.BaseFilter;
 import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
-import com.tomash.androidcontacts.contactgetter.utils.FilterUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
-public final class ContactsGetter {
+import static android.provider.ContactsContract.CommonDataKinds.Event;
+import static android.provider.ContactsContract.CommonDataKinds.GroupMembership;
+import static android.provider.ContactsContract.CommonDataKinds.Nickname;
+import static android.provider.ContactsContract.CommonDataKinds.Note;
+import static android.provider.ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE;
+import static android.provider.ContactsContract.CommonDataKinds.Organization.TITLE;
+import static android.provider.ContactsContract.CommonDataKinds.Phone;
+import static android.provider.ContactsContract.CommonDataKinds.SipAddress;
+import static android.provider.ContactsContract.CommonDataKinds.StructuredName;
+import static android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
+import static android.provider.ContactsContract.CommonDataKinds.Website;
+
+class ContactsGetter {
     private ContentResolver mResolver;
     private Context mCtx;
     private List<FieldType> mEnabledFields;
     private String[] mSelectionArgs;
     private String mSorting;
     private String mSelection;
-    final private String MAIN_DATA_KEY = "data1";
-    final private String LABEL_DATA_KEY = "data2";
-    final private String CUSTOM_LABEL_DATA_KEY = "data3";
-    final private String ID_KEY = "contact_id";
+    private static final String MAIN_DATA_KEY = "data1";
+    private static final String LABEL_DATA_KEY = "data2";
+    private static final String CUSTOM_LABEL_DATA_KEY = "data3";
+    private static final String ID_KEY = "contact_id";
+    private static final String[] WITH_LABEL_PROJECTION = new String[]{ID_KEY, MAIN_DATA_KEY, LABEL_DATA_KEY, CUSTOM_LABEL_DATA_KEY};
+    private static final String[] CONTACTS_PROJECTION = new String[]{ContactsContract.Contacts._ID, ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP,
+        ContactsContract.Contacts.PHOTO_URI, ContactsContract.Contacts.LOOKUP_KEY, ContactsContract.Contacts.DISPLAY_NAME};
     private Class<? extends ContactData> mContactDataClass;
 
 
@@ -50,14 +63,14 @@ public final class ContactsGetter {
         this.mSelection = selection;
     }
 
-    private ContactsGetter setContactDataClass(Class<? extends ContactData> mContactDataClass) {
+    ContactsGetter setContactDataClass(Class<? extends ContactData> mContactDataClass) {
         this.mContactDataClass = mContactDataClass;
         return this;
     }
 
     private Cursor getContactsCursorWithSelection(String ordering, String selection, String[] selectionArgs) {
         return mResolver.query(ContactsContract.Contacts.CONTENT_URI,
-            null, selection, selectionArgs, ordering);
+            CONTACTS_PROJECTION, selection, selectionArgs, ordering);
     }
 
     private <T extends ContactData> T getContactData() {
@@ -80,34 +93,34 @@ public final class ContactsGetter {
     }
 
 
-    private <T extends ContactData> List<T> getContacts() {
+    <T extends ContactData> List<T> getContacts() {
         Cursor c = getContactsCursorWithSelection(mSorting, mSelection, mSelectionArgs);
         List<T> contactsList = new ArrayList<>();
-        SparseArray<List<PhoneNumber>> phonesDataMap = mEnabledFields.contains(FieldType.PHONE_NUMBERS) ? getDataMap(getCursorFromUri(ContactsContract.CommonDataKinds.Phone.CONTENT_URI), new WithLabelCreator<PhoneNumber>() {
+        SparseArray<List<PhoneNumber>> phonesDataMap = mEnabledFields.contains(FieldType.PHONE_NUMBERS) ? getDataMap(getCursorFromUri(WITH_LABEL_PROJECTION, Phone.CONTENT_URI), new WithLabelCreator<PhoneNumber>() {
             @Override
             public PhoneNumber create(String mainData, int contactId, int labelId, String labelName) {
                 return new PhoneNumber(mainData, contactId, labelId, labelName, mCtx);
             }
         }) : new SparseArray<List<PhoneNumber>>();
-        SparseArray<List<Address>> addressDataMap = mEnabledFields.contains(FieldType.ADDRESS) ? getDataMap(getCursorFromUri(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI), new WithLabelCreator<Address>() {
+        SparseArray<List<Address>> addressDataMap = mEnabledFields.contains(FieldType.ADDRESS) ? getDataMap(getCursorFromUri(WITH_LABEL_PROJECTION, StructuredPostal.CONTENT_URI), new WithLabelCreator<Address>() {
             @Override
             public Address create(String mainData, int contactId, int labelId, String labelName) {
                 return new Address(mainData, contactId, labelId, labelName, mCtx);
             }
         }) : new SparseArray<List<Address>>();
-        SparseArray<List<Email>> emailDataMap = mEnabledFields.contains(FieldType.EMAILS) ? getDataMap(getCursorFromUri(ContactsContract.CommonDataKinds.Email.CONTENT_URI), new WithLabelCreator<Email>() {
+        SparseArray<List<Email>> emailDataMap = mEnabledFields.contains(FieldType.EMAILS) ? getDataMap(getCursorFromUri(WITH_LABEL_PROJECTION, CommonDataKinds.Email.CONTENT_URI), new WithLabelCreator<Email>() {
             @Override
             public Email create(String mainData, int contactId, int labelId, String labelName) {
                 return new Email(mainData, contactId, labelId, labelName, mCtx);
             }
         }) : new SparseArray<List<Email>>();
-        SparseArray<List<SpecialDate>> specialDateMap = mEnabledFields.contains(FieldType.SPECIAL_DATES) ? getDataMap(getCursorFromContentType(ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE), new WithLabelCreator<SpecialDate>() {
+        SparseArray<List<SpecialDate>> specialDateMap = mEnabledFields.contains(FieldType.SPECIAL_DATES) ? getDataMap(getCursorFromContentType(WITH_LABEL_PROJECTION, Event.CONTENT_ITEM_TYPE), new WithLabelCreator<SpecialDate>() {
             @Override
             public SpecialDate create(String mainData, int contactId, int labelId, String labelName) {
                 return new SpecialDate(mainData, contactId, labelId, labelName, mCtx);
             }
         }) : new SparseArray<List<SpecialDate>>();
-        SparseArray<List<Relation>> relationMap = mEnabledFields.contains(FieldType.RELATIONS) ? getDataMap(getCursorFromContentType(ContactsContract.CommonDataKinds.Relation.CONTENT_ITEM_TYPE), new WithLabelCreator<Relation>() {
+        SparseArray<List<Relation>> relationMap = mEnabledFields.contains(FieldType.RELATIONS) ? getDataMap(getCursorFromContentType(WITH_LABEL_PROJECTION, CommonDataKinds.Relation.CONTENT_ITEM_TYPE), new WithLabelCreator<Relation>() {
             @Override
             public Relation create(String mainData, int contactId, int labelId, String labelName) {
                 return new Relation(mainData, contactId, labelId, labelName, mCtx);
@@ -115,9 +128,9 @@ public final class ContactsGetter {
         }) : new SparseArray<List<Relation>>();
         SparseArray<List<IMAddress>> imAddressesDataMap = mEnabledFields.contains(FieldType.IM_ADDRESSES) ? getIMAddressesMap() : new SparseArray<List<IMAddress>>();
         SparseArray<List<String>> websitesDataMap = mEnabledFields.contains(FieldType.WEBSITES) ? getWebSitesMap() : new SparseArray<List<String>>();
-        SparseArray<String> notesDataMap = mEnabledFields.contains(FieldType.NOTES) ? getStringDataMap(ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE) : new SparseArray<String>();
-        SparseArray<String> nicknameDataMap = mEnabledFields.contains(FieldType.NICKNAME) ? getStringDataMap(ContactsContract.CommonDataKinds.Nickname.CONTENT_ITEM_TYPE) : new SparseArray<String>();
-        SparseArray<String> sipDataMap = mEnabledFields.contains(FieldType.SIP) ? getStringDataMap(ContactsContract.CommonDataKinds.SipAddress.CONTENT_ITEM_TYPE) : new SparseArray<String>();
+        SparseArray<String> notesDataMap = mEnabledFields.contains(FieldType.NOTES) ? getStringDataMap(Note.CONTENT_ITEM_TYPE) : new SparseArray<String>();
+        SparseArray<String> nicknameDataMap = mEnabledFields.contains(FieldType.NICKNAME) ? getStringDataMap(Nickname.CONTENT_ITEM_TYPE) : new SparseArray<String>();
+        SparseArray<String> sipDataMap = mEnabledFields.contains(FieldType.SIP) ? getStringDataMap(SipAddress.CONTENT_ITEM_TYPE) : new SparseArray<String>();
         SparseArray<Organization> organisationDataMap = mEnabledFields.contains(FieldType.ORGANIZATION) ? getOrganizationDataMap() : new SparseArray<Organization>();
         SparseArray<NameData> nameDataMap = mEnabledFields.contains(FieldType.NAME_DATA) ? getNameDataMap() : new SparseArray<NameData>();
         SparseArray<List<Group>> groupsDataMap = mEnabledFields.contains(FieldType.GROUPS) ? getGroupsDataMap() : new SparseArray<List<Group>>();
@@ -154,7 +167,7 @@ public final class ContactsGetter {
 
     private SparseArray<List<String>> getWebSitesMap() {
         SparseArray<List<String>> idSiteMap = new SparseArray<>();
-        Cursor websiteCur = getCursorFromContentType(ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE);
+        Cursor websiteCur = getCursorFromContentType(new String[]{ID_KEY, MAIN_DATA_KEY}, Website.CONTENT_ITEM_TYPE);
         if (websiteCur != null) {
             while (websiteCur.moveToNext()) {
                 int id = websiteCur.getInt(websiteCur.getColumnIndex(ID_KEY));
@@ -196,7 +209,7 @@ public final class ContactsGetter {
     private SparseArray<List<Group>> getGroupsDataMap() {
         SparseArray<List<Group>> idListGroupMap = new SparseArray<>();
         SparseArray<Group> groupMapById = getGroupsMap();
-        Cursor groupMembershipCursor = getCursorFromContentType(ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE);
+        Cursor groupMembershipCursor = getCursorFromContentType(new String[]{ID_KEY, MAIN_DATA_KEY}, GroupMembership.CONTENT_ITEM_TYPE);
         if (groupMembershipCursor != null) {
             while (groupMembershipCursor.moveToNext()) {
                 int id = groupMembershipCursor.getInt(groupMembershipCursor.getColumnIndex(ID_KEY));
@@ -216,22 +229,23 @@ public final class ContactsGetter {
 
 
     private SparseArray<NameData> getNameDataMap() {
-        Cursor nameCursor = getCursorFromContentType(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
+        Cursor nameCursor = getCursorFromContentType(new String[]{ID_KEY, StructuredName.DISPLAY_NAME, StructuredName.GIVEN_NAME, StructuredName.PHONETIC_MIDDLE_NAME, StructuredName.PHONETIC_FAMILY_NAME,
+            StructuredName.FAMILY_NAME, StructuredName.PREFIX, StructuredName.MIDDLE_NAME, StructuredName.SUFFIX, StructuredName.PHONETIC_GIVEN_NAME}, StructuredName.CONTENT_ITEM_TYPE);
         SparseArray<NameData> nameDataSparseArray = new SparseArray<>();
         if (nameCursor != null) {
             while (nameCursor.moveToNext()) {
                 int id = nameCursor.getInt(nameCursor.getColumnIndex(ID_KEY));
                 if (nameDataSparseArray.get(id) == null)
                     nameDataSparseArray.put(id, new NameData()
-                        .setFullName(nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME)))
-                        .setFirstName(nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME)))
-                        .setSurname(nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME)))
-                        .setNamePrefix(nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.PREFIX)))
-                        .setMiddleName(nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME)))
-                        .setNameSuffix(nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.SUFFIX)))
-                        .setPhoneticFirst(nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME)))
-                        .setPhoneticMiddle(nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME)))
-                        .setPhoneticLast(nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME)))
+                        .setFullName(nameCursor.getString(nameCursor.getColumnIndex(StructuredName.DISPLAY_NAME)))
+                        .setFirstName(nameCursor.getString(nameCursor.getColumnIndex(StructuredName.GIVEN_NAME)))
+                        .setSurname(nameCursor.getString(nameCursor.getColumnIndex(StructuredName.FAMILY_NAME)))
+                        .setNamePrefix(nameCursor.getString(nameCursor.getColumnIndex(StructuredName.PREFIX)))
+                        .setMiddleName(nameCursor.getString(nameCursor.getColumnIndex(StructuredName.MIDDLE_NAME)))
+                        .setNameSuffix(nameCursor.getString(nameCursor.getColumnIndex(StructuredName.SUFFIX)))
+                        .setPhoneticFirst(nameCursor.getString(nameCursor.getColumnIndex(StructuredName.PHONETIC_GIVEN_NAME)))
+                        .setPhoneticMiddle(nameCursor.getString(nameCursor.getColumnIndex(StructuredName.PHONETIC_MIDDLE_NAME)))
+                        .setPhoneticLast(nameCursor.getString(nameCursor.getColumnIndex(StructuredName.PHONETIC_FAMILY_NAME)))
                     );
             }
             nameCursor.close();
@@ -243,13 +257,13 @@ public final class ContactsGetter {
 
     private SparseArray<List<IMAddress>> getIMAddressesMap() {
         SparseArray<List<IMAddress>> idImAddressMap = new SparseArray<>();
-        Cursor cur = getCursorFromContentType(ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE);
+        Cursor cur = getCursorFromContentType(new String[]{ID_KEY, MAIN_DATA_KEY, Im.PROTOCOL, Im.CUSTOM_PROTOCOL}, Im.CONTENT_ITEM_TYPE);
         if (cur != null) {
             while (cur.moveToNext()) {
                 int id = cur.getInt(cur.getColumnIndex(ID_KEY));
                 String data = cur.getString(cur.getColumnIndex(MAIN_DATA_KEY));
-                int labelId = cur.getInt(cur.getColumnIndex(ContactsContract.CommonDataKinds.Im.PROTOCOL));
-                String customLabel = cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Im.CUSTOM_PROTOCOL));
+                int labelId = cur.getInt(cur.getColumnIndex(Im.PROTOCOL));
+                String customLabel = cur.getString(cur.getColumnIndex(Im.CUSTOM_PROTOCOL));
                 IMAddress current = new IMAddress(data, id, labelId, customLabel, mCtx);
                 List<IMAddress> currentWebsiteList = idImAddressMap.get(id);
                 if (currentWebsiteList == null) {
@@ -266,7 +280,7 @@ public final class ContactsGetter {
 
     private SparseArray<String> getStringDataMap(String contentType) {
         SparseArray<String> idNoteMap = new SparseArray<>();
-        Cursor noteCur = getCursorFromContentType(contentType);
+        Cursor noteCur = getCursorFromContentType(new String[]{ID_KEY, MAIN_DATA_KEY}, contentType);
         if (noteCur != null) {
             while (noteCur.moveToNext()) {
                 int id = noteCur.getInt(noteCur.getColumnIndex(ID_KEY));
@@ -280,12 +294,12 @@ public final class ContactsGetter {
 
     private SparseArray<Organization> getOrganizationDataMap() {
         SparseArray<Organization> idOrganizationMap = new SparseArray<>();
-        Cursor noteCur = getCursorFromContentType(ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE);
+        Cursor noteCur = getCursorFromContentType(new String[]{ID_KEY, MAIN_DATA_KEY, TITLE}, CONTENT_ITEM_TYPE);
         if (noteCur != null) {
             while (noteCur.moveToNext()) {
                 int id = noteCur.getInt(noteCur.getColumnIndex(ID_KEY));
                 String organizationName = noteCur.getString(noteCur.getColumnIndex(MAIN_DATA_KEY));
-                String organizationTitle = noteCur.getString(noteCur.getColumnIndex(ContactsContract.CommonDataKinds.Organization.TITLE));
+                String organizationTitle = noteCur.getString(noteCur.getColumnIndex(TITLE));
                 idOrganizationMap.put(id, new Organization()
                     .setName(organizationName)
                     .setTitle(organizationTitle));
@@ -318,333 +332,21 @@ public final class ContactsGetter {
     }
 
 
-    private Cursor getCursorFromUri(Uri uri) {
-        return mResolver.query(uri, null,
+    private Cursor getCursorFromUri(String[] projection, Uri uri) {
+        return mResolver.query(uri, projection,
             null,
             null, null);
     }
 
-    private Cursor getCursorFromContentType(String contentType) {
+    private Cursor getCursorFromContentType(String[] projection, String contentType) {
         String orgWhere = ContactsContract.Data.MIMETYPE + " = ?";
         String[] orgWhereParams = new String[]{contentType};
         return mResolver.query(ContactsContract.Data.CONTENT_URI,
-            null, orgWhere, orgWhereParams, null);
+            projection, orgWhere, orgWhereParams, null);
     }
 
     interface WithLabelCreator<T extends WithLabel> {
         T create(String mainData, int contactId, int labelId, String labelName);
     }
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////BUILDER//////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public static class Builder {
-        private Context mCtx;
-        private Sorting mSortOrder = Sorting.BY_DISPLAY_NAME_ASC;
-        private StringBuilder mSelectionBuilder = new StringBuilder();
-        private List<String> mParamsList = new ArrayList<>(2);
-        private List<BaseFilter> mFilterList = new ArrayList<>(8);
-        private List<FieldType> mEnabledFields = new ArrayList<>(8);
-
-        public Builder(Context ctx) {
-            mCtx = ctx;
-        }
-
-        /**
-         * <p>
-         * Sets sort order for all contacts
-         * </p>
-         * <p>
-         * Sort types could be found here {@link Sorting}
-         * </p>
-         * <p>
-         * By default is ascending by display name
-         * </p>
-         *
-         * @param sortOrder order to sort
-         */
-        public Builder setSortOrder(Sorting sortOrder) {
-            this.mSortOrder = sortOrder;
-            return this;
-        }
-
-        /**
-         * <p>
-         * Should get all contacts or contacts only with phones
-         * </p>
-         * <p>
-         * Note : Will automatically query for phone numbers.
-         * </p>
-         * <p>
-         * No need to explicitly add Phone numbers to field list
-         * </p>
-         * By default returns all contacts
-         */
-        public Builder onlyWithPhones() {
-            if (mSelectionBuilder.length() != 0)
-                mSelectionBuilder.append(" AND ");
-            mSelectionBuilder.append(ContactsContract.CommonDataKinds.Phone.HAS_PHONE_NUMBER)
-                .append(" = 1");
-            addField(FieldType.PHONE_NUMBERS);
-            return this;
-        }
-
-        /**
-         * <p>
-         * Should get contacts only with photos or not
-         * </p>
-         * By default returns all contacts
-         */
-        public Builder onlyWithPhotos() {
-            if (mSelectionBuilder.length() != 0)
-                mSelectionBuilder.append(" AND ");
-            mSelectionBuilder.append(ContactsContract.CommonDataKinds.Phone.PHOTO_URI)
-                .append(" IS NOT NULL");
-            return this;
-        }
-
-        /**
-         * Searches for contacts with name that contains sequence
-         *
-         * @param nameLike sequence to search for
-         */
-        public Builder withNameLike(String nameLike) {
-            if (mSelectionBuilder.length() != 0)
-                mSelectionBuilder.append(" AND ");
-            mSelectionBuilder.append(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
-                .append(" LIKE ?");
-            mParamsList.add("%" + nameLike + "%");
-            return this;
-        }
-
-        /**
-         * Searches for contacts with this name
-         *
-         * @param name name to search for
-         */
-        public Builder withName(String name) {
-            if (mSelectionBuilder.length() != 0)
-                mSelectionBuilder.append(" AND ");
-            mSelectionBuilder.append(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
-                .append(" = ?");
-            mParamsList.add(name);
-            return this;
-        }
-
-        /**
-         * Searches for contacts that contains this number sequence
-         *
-         * @param number number sequence to search for
-         */
-        public Builder withPhoneLike(final String number) {
-            mFilterList.add(FilterUtils.withPhoneLikeFilter(number));
-            return onlyWithPhones();
-        }
-
-        /**
-         * Searches for contacts with this number
-         *
-         * @param number number to search for
-         */
-        public Builder withPhone(final String number) {
-            mFilterList.add(FilterUtils.withPhoneFilter(number));
-            return onlyWithPhones();
-        }
-
-        /**
-         * Searches for contacts with this email
-         * Implicitly adds Email field
-         *
-         * @param email email to search for
-         */
-        public Builder withEmail(final String email) {
-            addField(FieldType.EMAILS);
-            mFilterList.add(FilterUtils.withEmailFilter(email));
-            return this;
-        }
-
-        /**
-         * Searches for contacts that contains sequence
-         * Implicitly adds Email field
-         *
-         * @param sequence sequence to search for
-         */
-        public Builder withEmailLike(final String sequence) {
-            addField(FieldType.EMAILS);
-            mFilterList.add(FilterUtils.withEmailLikeFilter(sequence));
-            return this;
-        }
-
-        /**
-         * Searches for contacts with this number
-         * Implicitly adds Address field
-         *
-         * @param number number to search for
-         */
-        public Builder withAddress(final String number) {
-            addField(FieldType.ADDRESS);
-            mFilterList.add(FilterUtils.withAddressFilter(number));
-            return this;
-        }
-
-        /**
-         * Searches for addresses that contains this sequence
-         * Implicitly adds Address field
-         *
-         * @param sequence sequence to search for
-         */
-        public Builder withAddressLike(final String sequence) {
-            addField(FieldType.ADDRESS);
-            mFilterList.add(FilterUtils.withAddressLikeFilter(sequence));
-            return this;
-        }
-
-
-        private <T extends ContactData> List<T> applyFilters(List<T> contactList) {
-            for (BaseFilter filter : mFilterList) {
-                for (Iterator<T> iterator = contactList.iterator(); iterator.hasNext(); ) {
-                    ContactData contact = iterator.next();
-                    if (!filter.passedFilter(contact))
-                        iterator.remove();
-                }
-            }
-            return contactList;
-        }
-
-        /**
-         * <p>
-         * Applies custom filter to query on contacts list
-         * </p>
-         * <p>
-         * Additional filters and example implementations could be found here {@link FilterUtils}
-         * </p>
-         *
-         * @param filter filter to apply
-         */
-        public Builder applyCustomFilter(BaseFilter filter) {
-            mFilterList.add(filter);
-            return this;
-        }
-
-        /**
-         * <p>
-         * Enables all fields for query
-         * </p>
-         * <p>
-         * Note : Consider to enable fields you need with {@link #addField(FieldType...)} to increase performance
-         * </p>
-         */
-        public Builder allFields() {
-            addField(FieldType.values());
-            return this;
-        }
-
-        /**
-         * <p>
-         * Enables fields that should be queried
-         * </p>
-         * <p>
-         * Number of fields influence on performance
-         * </p>
-         *
-         * @param fieldType field type you want to add
-         */
-        public Builder addField(FieldType... fieldType) {
-            mEnabledFields.addAll(Arrays.asList(fieldType));
-            return this;
-        }
-
-        private ContactsGetter initGetter() {
-            ContactsGetter getter;
-            if (mSelectionBuilder.length() == 0)
-                getter = new ContactsGetter(mCtx, mEnabledFields, mSortOrder.getSorting(), null, null);
-            else
-                getter = new ContactsGetter(mCtx, mEnabledFields, mSortOrder.getSorting(), generateSelectionArgs(), generateSelection());
-            return getter;
-        }
-
-
-        /**
-         * Builds list of contacts
-         * @param T class of object you want to get data
-         */
-        public <T extends ContactData> List<T> buildList(Class<? extends ContactData> T) {
-            return applyFilters((List<T>) initGetter()
-                .setContactDataClass(T)
-                .getContacts());
-        }
-
-        /**
-         * Builds list of contacts
-         */
-        public List<ContactData> buildList() {
-            return applyFilters(initGetter().getContacts());
-        }
-        /**
-         * Gets contact by local id
-         *
-         * @param id id to search for
-         * @return contact with data specified by options or null if no contact with this id
-         */
-        public ContactData getById(int id) {
-            if (mSelectionBuilder.length() != 0)
-                mSelectionBuilder.append(" AND ");
-            mSelectionBuilder.append(ContactsContract.CommonDataKinds.Phone._ID)
-                .append(" = ?");
-            mParamsList.add(String.valueOf(id));
-            return firstOrNull();
-        }
-
-        /**
-         * Gets contact by local id
-         *
-         * @param id id to search for
-         * @param T class of object you want to get data
-         * @return contact with data specified by options or null if no contact with this id
-         */
-        public<T extends ContactData> T getById(int id,Class<T> T) {
-            if (mSelectionBuilder.length() != 0)
-                mSelectionBuilder.append(" AND ");
-            mSelectionBuilder.append(ContactsContract.CommonDataKinds.Phone._ID)
-                .append(" = ?");
-            mParamsList.add(String.valueOf(id));
-            return firstOrNull(T);
-        }
-
-        /**
-         * Get first contact of null if no contacts with these params
-         */
-        public ContactData firstOrNull() {
-            List<ContactData> contacts = buildList();
-            if (contacts.isEmpty())
-                return null;
-            else
-                return contacts.get(0);
-        }
-
-        /**
-         * Get first contact of null if no contacts with these params
-         * @param T class of object you want to get data
-         */
-        public <T extends ContactData> T firstOrNull(Class<T> T) {
-            List<T> contacts = buildList(T);
-            if (contacts.isEmpty())
-                return null;
-            else
-                return contacts.get(0);
-        }
-
-        private String generateSelection() {
-            return mSelectionBuilder.toString();
-        }
-
-        private String[] generateSelectionArgs() {
-            return mParamsList.toArray(new String[mParamsList.size()]);
-        }
-
-    }
-
 
 }
