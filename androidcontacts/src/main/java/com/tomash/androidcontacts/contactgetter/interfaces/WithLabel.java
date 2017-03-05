@@ -71,7 +71,7 @@ public abstract class WithLabel {
 
     protected abstract boolean isValidLabel(int id);
 
-    protected abstract int getCustomLabelId();
+    public abstract int getCustomLabelId();
 
 
     public WithLabel() {

@@ -48,7 +48,7 @@ public class IMAddress extends WithLabel {
     }
 
     @Override
-    protected int getCustomLabelId() {
+    public int getCustomLabelId() {
         return -1;
     }
 }

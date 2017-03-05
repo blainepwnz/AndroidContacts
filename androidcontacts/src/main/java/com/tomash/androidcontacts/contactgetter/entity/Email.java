@@ -34,7 +34,7 @@ public class Email extends WithLabel {
 
     @Override
     protected int getDefaultLabelId() {
-        return 0;
+        return TYPE_HOME;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class Email extends WithLabel {
     }
 
     @Override
-    protected int getCustomLabelId() {
-        return TYPE_HOME;
+    public int getCustomLabelId() {
+        return 0;
     }
 }

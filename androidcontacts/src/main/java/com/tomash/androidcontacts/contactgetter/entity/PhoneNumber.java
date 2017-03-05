@@ -60,7 +60,7 @@ public class PhoneNumber extends WithLabel {
     }
 
     @Override
-    protected int getCustomLabelId() {
+    public int getCustomLabelId() {
         return 0;
     }
 }

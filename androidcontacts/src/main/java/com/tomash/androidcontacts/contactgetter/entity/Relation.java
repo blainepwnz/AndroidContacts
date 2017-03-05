@@ -55,7 +55,7 @@ public class Relation extends WithLabel {
     }
 
     @Override
-    protected int getCustomLabelId() {
+    public int getCustomLabelId() {
         return 0;
     }
 }

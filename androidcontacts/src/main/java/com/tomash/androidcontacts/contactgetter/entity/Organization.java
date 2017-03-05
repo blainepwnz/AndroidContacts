@@ -5,17 +5,25 @@ package com.tomash.androidcontacts.contactgetter.entity;
  */
 
 public class Organization {
-    private String name="";
-    private String title="";
+    private String name = "";
+    private String title = "";
 
     public String getName() {
         return name;
     }
 
     public Organization setName(String name) {
-        if(name==null)return this;
+        if (name == null) return this;
         this.name = name;
         return this;
+    }
+
+    public Organization(String name, String title) {
+        setName(name);
+        setTitle(title);
+    }
+
+    public Organization() {
     }
 
     public String getTitle() {
@@ -23,7 +31,7 @@ public class Organization {
     }
 
     public Organization setTitle(String title) {
-        if(title==null)return this;
+        if (title == null) return this;
         this.title = title;
         return this;
     }

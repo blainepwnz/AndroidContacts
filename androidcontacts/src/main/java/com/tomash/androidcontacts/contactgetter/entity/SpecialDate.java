@@ -33,7 +33,7 @@ public class SpecialDate extends WithLabel {
 
     @Override
     protected int getDefaultLabelId() {
-        return 0;
+        return TYPE_ANNIVERSARY;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class SpecialDate extends WithLabel {
     }
 
     @Override
-    protected int getCustomLabelId() {
-        return TYPE_ANNIVERSARY;
+    public int getCustomLabelId() {
+        return 0;
     }
 }
