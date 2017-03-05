@@ -37,7 +37,7 @@ class ContactsSaver {
         int[] ids = new int[results.length];
         for (int i = 0; i < results.length; i++) {
             int id =Integer.parseInt(results[i].uri.getLastPathSegment());
-            generateInsertOperations(cvList, contactDataList.get(0), id);
+            generateInsertOperations(cvList, contactDataList.get(i), id);
             ids[i]=id;
         }
         mResolver.bulkInsert(ContactsContract.Data.CONTENT_URI, cvList.toArray(new ContentValues[cvList.size()]));

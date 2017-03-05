@@ -373,13 +373,6 @@ class ContactsGetter {
         return dataSparseArray;
     }
 
-
-    private Cursor getCursorFromUri(String[] projection, Uri uri) {
-        return mResolver.query(uri, projection,
-            null,
-            null, null);
-    }
-
     private Cursor getCursorFromContentType(String[] projection, String contentType) {
         String orgWhere = ContactsContract.Data.MIMETYPE + " = ?";
         String[] orgWhereParams = new String[]{contentType};
