@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.CommonDataKinds.Im;
@@ -52,6 +53,8 @@ class ContactsGetter {
     private static final String[] WITH_LABEL_PROJECTION = new String[]{ID_KEY, MAIN_DATA_KEY, LABEL_DATA_KEY, CUSTOM_LABEL_DATA_KEY};
     private static final String[] CONTACTS_PROJECTION = new String[]{ContactsContract.Contacts._ID, ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP,
         ContactsContract.Contacts.PHOTO_URI, ContactsContract.Contacts.LOOKUP_KEY, ContactsContract.Contacts.DISPLAY_NAME};
+    private static final String[] CONTACTS_PROJECTION_LOW_API = new String[]{ContactsContract.Contacts._ID,
+        ContactsContract.Contacts.PHOTO_URI, ContactsContract.Contacts.LOOKUP_KEY, ContactsContract.Contacts.DISPLAY_NAME};
     private Class<? extends ContactData> mContactDataClass;
 
 
@@ -71,7 +74,7 @@ class ContactsGetter {
 
     private Cursor getContactsCursorWithSelection(String ordering, String selection, String[] selectionArgs) {
         return mResolver.query(ContactsContract.Contacts.CONTENT_URI,
-            CONTACTS_PROJECTION, selection, selectionArgs, ordering);
+            android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1 ? CONTACTS_PROJECTION : CONTACTS_PROJECTION_LOW_API, selection, selectionArgs, ordering);
     }
 
     private <T extends ContactData> T getContactData() {
@@ -97,38 +100,40 @@ class ContactsGetter {
     <T extends ContactData> List<T> getContacts() {
         Cursor c = getContactsCursorWithSelection(mSorting, mSelection, mSelectionArgs);
         List<T> contactsList = new ArrayList<>();
-        SparseArray<List<PhoneNumber>> phonesDataMap = mEnabledFields.contains(FieldType.PHONE_NUMBERS) ? getDataMap(getCursorFromUri(WITH_LABEL_PROJECTION, Phone.CONTENT_URI), new WithLabelCreator<PhoneNumber>() {
+        if (c == null)
+            return contactsList;
+        SparseArray<List<PhoneNumber>> phonesDataMap = mEnabledFields.contains(FieldType.PHONE_NUMBERS) ? getDataMap(getCursorFromContentType(WITH_LABEL_PROJECTION, Phone.CONTENT_ITEM_TYPE), new WithLabelCreator<PhoneNumber>() {
             @Override
             public PhoneNumber create(String mainData, int contactId, int labelId, String labelName) {
                 PhoneNumber number;
-                if(labelName!=null)
-                    number = new PhoneNumber(mainData,labelName);
+                if (labelName != null)
+                    number = new PhoneNumber(mainData, labelName);
                 else
-                    number = new PhoneNumber(mCtx,mainData,labelId);
+                    number = new PhoneNumber(mCtx, mainData, labelId);
                 number.setContactId(contactId);
                 return number;
             }
         }) : new SparseArray<List<PhoneNumber>>();
-        SparseArray<List<Address>> addressDataMap = mEnabledFields.contains(FieldType.ADDRESS) ? getDataMap(getCursorFromUri(WITH_LABEL_PROJECTION, StructuredPostal.CONTENT_URI), new WithLabelCreator<Address>() {
+        SparseArray<List<Address>> addressDataMap = mEnabledFields.contains(FieldType.ADDRESS) ? getDataMap(getCursorFromContentType(WITH_LABEL_PROJECTION, StructuredPostal.CONTENT_ITEM_TYPE), new WithLabelCreator<Address>() {
             @Override
             public Address create(String mainData, int contactId, int labelId, String labelName) {
                 Address address;
-                if(labelName!=null)
-                    address = new Address(mainData,labelName);
+                if (labelName != null)
+                    address = new Address(mainData, labelName);
                 else
-                    address = new Address(mCtx,mainData,labelId);
+                    address = new Address(mCtx, mainData, labelId);
                 address.setContactId(contactId);
                 return address;
             }
         }) : new SparseArray<List<Address>>();
-        SparseArray<List<Email>> emailDataMap = mEnabledFields.contains(FieldType.EMAILS) ? getDataMap(getCursorFromUri(WITH_LABEL_PROJECTION, CommonDataKinds.Email.CONTENT_URI), new WithLabelCreator<Email>() {
+        SparseArray<List<Email>> emailDataMap = mEnabledFields.contains(FieldType.EMAILS) ? getDataMap(getCursorFromContentType(WITH_LABEL_PROJECTION, CommonDataKinds.Email.CONTENT_ITEM_TYPE), new WithLabelCreator<Email>() {
             @Override
             public Email create(String mainData, int contactId, int labelId, String labelName) {
                 Email email;
-                if(labelName!=null)
-                    email = new Email(mainData,labelName);
+                if (labelName != null)
+                    email = new Email(mainData, labelName);
                 else
-                    email = new Email(mCtx,mainData,labelId);
+                    email = new Email(mCtx, mainData, labelId);
                 email.setContactId(contactId);
                 return email;
             }
@@ -137,10 +142,10 @@ class ContactsGetter {
             @Override
             public SpecialDate create(String mainData, int contactId, int labelId, String labelName) {
                 SpecialDate specialData;
-                if(labelName!=null)
-                    specialData = new SpecialDate(mainData,labelName);
+                if (labelName != null)
+                    specialData = new SpecialDate(mainData, labelName);
                 else
-                    specialData = new SpecialDate(mCtx,mainData,labelId);
+                    specialData = new SpecialDate(mCtx, mainData, labelId);
                 specialData.setContactId(contactId);
                 return specialData;
             }
@@ -149,10 +154,10 @@ class ContactsGetter {
             @Override
             public Relation create(String mainData, int contactId, int labelId, String labelName) {
                 Relation relation;
-                if(labelName!=null)
-                    relation = new Relation(mainData,labelName);
+                if (labelName != null)
+                    relation = new Relation(mainData, labelName);
                 else
-                    relation = new Relation(mCtx,mainData,labelId);
+                    relation = new Relation(mCtx, mainData, labelId);
                 relation.setContactId(contactId);
                 return relation;
             }
@@ -167,7 +172,9 @@ class ContactsGetter {
         SparseArray<List<Group>> groupsDataMap = mEnabledFields.contains(FieldType.GROUPS) ? getGroupsDataMap() : new SparseArray<List<Group>>();
         while (c.moveToNext()) {
             int id = c.getInt(c.getColumnIndex(ContactsContract.Contacts._ID));
-            long date = c.getLong(c.getColumnIndex(ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP));
+            long date = 0;
+            if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1)
+                date = c.getLong(c.getColumnIndex(ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP));
             String photoUriString = c.getString(c.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
             String lookupKey = c.getString(c.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
             Uri photoUri = photoUriString == null ? Uri.EMPTY : Uri.parse(c.getString(c.getColumnIndex(ContactsContract.Contacts.PHOTO_URI)));
@@ -365,7 +372,6 @@ class ContactsGetter {
         }
         return dataSparseArray;
     }
-
 
 
     private Cursor getCursorFromUri(String[] projection, Uri uri) {
