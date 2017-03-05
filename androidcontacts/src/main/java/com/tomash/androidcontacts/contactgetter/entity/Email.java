@@ -10,9 +10,21 @@ import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
  */
 
 public class Email extends WithLabel {
+    public static final int TYPE_HOME = 1;
+    public static final int TYPE_WORK = 2;
+    public static final int TYPE_OTHER = 3;
+    public static final int TYPE_MOBILE = 4;
 
-    public Email(String mainData, int contactId, int labelId, String labelName, Context ctx) {
-        super(mainData, contactId, labelId, labelName, ctx);
+    public Email(String mainData, String labelName) {
+        super(mainData, labelName);
+    }
+
+    public Email(Context ctx, String mainData, int labelId) {
+        super(ctx, mainData, labelId);
+    }
+
+    public Email(Context ctx, String mainData) {
+        super(ctx, mainData);
     }
 
     @Override
@@ -20,6 +32,18 @@ public class Email extends WithLabel {
         return ctx.getString(ContactsContract.CommonDataKinds.Email.getTypeLabelResource(id));
     }
 
-    public Email() {
+    @Override
+    protected int getDefaultLabelId() {
+        return 0;
+    }
+
+    @Override
+    protected boolean isValidLabel(int id) {
+        return id>=1 && id<=4;
+    }
+
+    @Override
+    protected int getCustomLabelId() {
+        return TYPE_HOME;
     }
 }

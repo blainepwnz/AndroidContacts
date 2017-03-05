@@ -10,16 +10,39 @@ import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
  */
 
 public class SpecialDate extends WithLabel {
+    public static final int TYPE_ANNIVERSARY = 1;
+    public static final int TYPE_OTHER = 2;
+    public static final int TYPE_BIRTHDAY = 3;
 
-    public SpecialDate(String mainData, int contactId, int labelId, String labelName, Context ctx) {
-        super(mainData, contactId, labelId, labelName, ctx);
+    public SpecialDate(String mainData, String labelName) {
+        super(mainData, labelName);
+    }
+
+    public SpecialDate(Context ctx, String mainData, int labelId) {
+        super(ctx, mainData, labelId);
+    }
+
+    public SpecialDate(Context ctx, String mainData) {
+        super(ctx, mainData);
     }
 
     @Override
-    protected String getLabelNameResId(Context ctx,int id) {
+    protected String getLabelNameResId(Context ctx, int id) {
         return ctx.getString(ContactsContract.CommonDataKinds.Event.getTypeResource(id));
     }
 
-    public SpecialDate() {
+    @Override
+    protected int getDefaultLabelId() {
+        return 0;
+    }
+
+    @Override
+    protected boolean isValidLabel(int id) {
+        return id >= 1 && id <= 3;
+    }
+
+    @Override
+    protected int getCustomLabelId() {
+        return TYPE_ANNIVERSARY;
     }
 }

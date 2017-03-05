@@ -12,24 +12,70 @@ public abstract class WithLabel {
     private int labelId;
     private String labelName;
 
-    public WithLabel(String mainData, int contactId, int labelId, String labelName, Context ctx) {
+    /**
+     * Used to create WithLabel objects with custom label
+     * @param mainData main data from this object , e.g. phone number , email
+     * @param labelName name of custom label
+     */
+    public WithLabel(String mainData, String labelName) {
         this.mainData = mainData;
-        this.contactId = contactId;
-        this.labelId = labelId;
-        if (labelName == null)
-            this.labelName = getLabelNameResId(ctx,labelId);
-        else
-            this.labelName = labelName;
+        this.contactId = -1;
+        this.labelId = getCustomLabelId();
+        this.labelName = labelName;
     }
 
     /**
+     * <p>
+     *Used to create WithLabel objects with specific in label
+     * </p>
+     * <p>
+     *     In case of invalid label will use default label for this type of data
+     * </p>
+     *
+     * @param ctx context
+     * @param mainData main data from this object , e.g. phone number , email
+     * @param labelId id for label , used to get name for this label with system default language , e.g. {@link com.tomash.androidcontacts.contactgetter.entity.PhoneNumber#TYPE_HOME}
+     */
+    public WithLabel(Context ctx, String mainData, int labelId) {
+        this.mainData = mainData;
+        this.contactId = -1;
+        this.labelId = isValidLabel(labelId) ? labelId : getDefaultLabelId();
+        this.labelName = getLabelNameResId(ctx, labelId);
+    }
+
+
+    /**
+     <p>
+     Used to create WithLabel objects with default label
+     </p>
+     * @param ctx context
+     * @param mainData  main data from this object , e.g. phone number , email
+     */
+    public WithLabel(Context ctx, String mainData) {
+        this.mainData = mainData;
+        this.contactId = -1;
+        this.labelId = getDefaultLabelId();
+        this.labelName = getLabelNameResId(ctx, labelId);
+    }
+
+
+    /**
      * Gets label resource by id
+     *
      * @param id id of this label
      * @return string id of this label
      */
-    protected abstract String getLabelNameResId(Context ctx,int id);
+    protected abstract String getLabelNameResId(Context ctx, int id);
 
-    public WithLabel(){}
+    protected abstract int getDefaultLabelId();
+
+    protected abstract boolean isValidLabel(int id);
+
+    protected abstract int getCustomLabelId();
+
+
+    public WithLabel() {
+    }
 
     public String getMainData() {
         return mainData;
@@ -58,8 +104,8 @@ public abstract class WithLabel {
         if (labelId != withLabel.labelId) return false;
         if (!mainData.equals(withLabel.mainData)) return false;
         return labelName.equals(withLabel.labelName);
-
     }
+
 
     public WithLabel setMainData(String mainData) {
         this.mainData = mainData;

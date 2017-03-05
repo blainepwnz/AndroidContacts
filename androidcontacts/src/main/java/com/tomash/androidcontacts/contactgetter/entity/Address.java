@@ -11,9 +11,21 @@ import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
 
 public class Address extends WithLabel {
 
+    public static final int TYPE_HOME = 1;
+    public static final int TYPE_WORK = 2;
+    public static final int TYPE_OTHER = 3;
 
-    public Address(String mainData, int contactId, int labelId, String labelName, Context ctx) {
-        super(mainData, contactId, labelId, labelName, ctx);
+
+    public Address(String mainData, String labelName) {
+        super(mainData, labelName);
+    }
+
+    public Address(Context ctx, String mainData, int labelId) {
+        super(ctx, mainData, labelId);
+    }
+
+    public Address(Context ctx, String mainData) {
+        super(ctx, mainData);
     }
 
     @Override
@@ -21,5 +33,18 @@ public class Address extends WithLabel {
         return ctx.getString(ContactsContract.CommonDataKinds.StructuredPostal.getTypeLabelResource(id));
     }
 
-    public Address() {}
+    @Override
+    protected int getDefaultLabelId() {
+        return TYPE_HOME;
+    }
+
+    @Override
+    protected boolean isValidLabel(int id) {
+        return id>=1 && id <=3;
+    }
+
+    @Override
+    protected int getCustomLabelId() {
+        return 0;
+    }
 }
