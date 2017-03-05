@@ -1,4 +1,4 @@
-package com.tomash.androidcontacts.contactgetter.main;
+package com.tomash.androidcontacts.contactgetter.main.contactsGetter;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -20,6 +20,7 @@ import com.tomash.androidcontacts.contactgetter.entity.PhoneNumber;
 import com.tomash.androidcontacts.contactgetter.entity.Relation;
 import com.tomash.androidcontacts.contactgetter.entity.SpecialDate;
 import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
+import com.tomash.androidcontacts.contactgetter.main.FieldType;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -99,31 +100,61 @@ class ContactsGetter {
         SparseArray<List<PhoneNumber>> phonesDataMap = mEnabledFields.contains(FieldType.PHONE_NUMBERS) ? getDataMap(getCursorFromUri(WITH_LABEL_PROJECTION, Phone.CONTENT_URI), new WithLabelCreator<PhoneNumber>() {
             @Override
             public PhoneNumber create(String mainData, int contactId, int labelId, String labelName) {
-                return new PhoneNumber(mainData, contactId, labelId, labelName, mCtx);
+                PhoneNumber number;
+                if(labelName!=null)
+                    number = new PhoneNumber(mainData,labelName);
+                else
+                    number = new PhoneNumber(mCtx,mainData,labelId);
+                number.setContactId(contactId);
+                return number;
             }
         }) : new SparseArray<List<PhoneNumber>>();
         SparseArray<List<Address>> addressDataMap = mEnabledFields.contains(FieldType.ADDRESS) ? getDataMap(getCursorFromUri(WITH_LABEL_PROJECTION, StructuredPostal.CONTENT_URI), new WithLabelCreator<Address>() {
             @Override
             public Address create(String mainData, int contactId, int labelId, String labelName) {
-                return new Address(mainData, contactId, labelId, labelName, mCtx);
+                Address address;
+                if(labelName!=null)
+                    address = new Address(mainData,labelName);
+                else
+                    address = new Address(mCtx,mainData,labelId);
+                address.setContactId(contactId);
+                return address;
             }
         }) : new SparseArray<List<Address>>();
         SparseArray<List<Email>> emailDataMap = mEnabledFields.contains(FieldType.EMAILS) ? getDataMap(getCursorFromUri(WITH_LABEL_PROJECTION, CommonDataKinds.Email.CONTENT_URI), new WithLabelCreator<Email>() {
             @Override
             public Email create(String mainData, int contactId, int labelId, String labelName) {
-                return new Email(mainData, contactId, labelId, labelName, mCtx);
+                Email email;
+                if(labelName!=null)
+                    email = new Email(mainData,labelName);
+                else
+                    email = new Email(mCtx,mainData,labelId);
+                email.setContactId(contactId);
+                return email;
             }
         }) : new SparseArray<List<Email>>();
         SparseArray<List<SpecialDate>> specialDateMap = mEnabledFields.contains(FieldType.SPECIAL_DATES) ? getDataMap(getCursorFromContentType(WITH_LABEL_PROJECTION, Event.CONTENT_ITEM_TYPE), new WithLabelCreator<SpecialDate>() {
             @Override
             public SpecialDate create(String mainData, int contactId, int labelId, String labelName) {
-                return new SpecialDate(mainData, contactId, labelId, labelName, mCtx);
+                SpecialDate specialData;
+                if(labelName!=null)
+                    specialData = new SpecialDate(mainData,labelName);
+                else
+                    specialData = new SpecialDate(mCtx,mainData,labelId);
+                specialData.setContactId(contactId);
+                return specialData;
             }
         }) : new SparseArray<List<SpecialDate>>();
         SparseArray<List<Relation>> relationMap = mEnabledFields.contains(FieldType.RELATIONS) ? getDataMap(getCursorFromContentType(WITH_LABEL_PROJECTION, CommonDataKinds.Relation.CONTENT_ITEM_TYPE), new WithLabelCreator<Relation>() {
             @Override
             public Relation create(String mainData, int contactId, int labelId, String labelName) {
-                return new Relation(mainData, contactId, labelId, labelName, mCtx);
+                Relation relation;
+                if(labelName!=null)
+                    relation = new Relation(mainData,labelName);
+                else
+                    relation = new Relation(mCtx,mainData,labelId);
+                relation.setContactId(contactId);
+                return relation;
             }
         }) : new SparseArray<List<Relation>>();
         SparseArray<List<IMAddress>> imAddressesDataMap = mEnabledFields.contains(FieldType.IM_ADDRESSES) ? getIMAddressesMap() : new SparseArray<List<IMAddress>>();
@@ -264,7 +295,11 @@ class ContactsGetter {
                 String data = cur.getString(cur.getColumnIndex(MAIN_DATA_KEY));
                 int labelId = cur.getInt(cur.getColumnIndex(Im.PROTOCOL));
                 String customLabel = cur.getString(cur.getColumnIndex(Im.CUSTOM_PROTOCOL));
-                IMAddress current = new IMAddress(data, id, labelId, customLabel, mCtx);
+                IMAddress current;
+                if (customLabel == null)
+                    current = new IMAddress(mCtx, data, labelId);
+                else
+                    current = new IMAddress(data, customLabel);
                 List<IMAddress> currentWebsiteList = idImAddressMap.get(id);
                 if (currentWebsiteList == null) {
                     currentWebsiteList = new ArrayList<>();
@@ -330,6 +365,7 @@ class ContactsGetter {
         }
         return dataSparseArray;
     }
+
 
 
     private Cursor getCursorFromUri(String[] projection, Uri uri) {

@@ -1,10 +1,12 @@
-package com.tomash.androidcontacts.contactgetter.main;
+package com.tomash.androidcontacts.contactgetter.main.contactsGetter;
 
 import android.content.Context;
 import android.provider.ContactsContract;
 
 import com.tomash.androidcontacts.contactgetter.entity.ContactData;
 import com.tomash.androidcontacts.contactgetter.interfaces.BaseFilter;
+import com.tomash.androidcontacts.contactgetter.main.FieldType;
+import com.tomash.androidcontacts.contactgetter.main.Sorting;
 import com.tomash.androidcontacts.contactgetter.utils.FilterUtils;
 
 import java.util.ArrayList;
@@ -244,6 +246,7 @@ public class ContactsGetterBuilder {
 
     /**
      * Builds list of contacts
+     *
      * @param T class of object you want to get data
      */
     public <T extends ContactData> List<T> buildList(Class<? extends ContactData> T) {
@@ -258,6 +261,7 @@ public class ContactsGetterBuilder {
     public List<ContactData> buildList() {
         return applyFilters(initGetter().getContacts());
     }
+
     /**
      * Gets contact by local id
      *
@@ -277,10 +281,10 @@ public class ContactsGetterBuilder {
      * Gets contact by local id
      *
      * @param id id to search for
-     * @param T class of object you want to get data
+     * @param T  class of object you want to get data
      * @return contact with data specified by options or null if no contact with this id
      */
-    public<T extends ContactData> T getById(int id,Class<T> T) {
+    public <T extends ContactData> T getById(int id, Class<T> T) {
         if (mSelectionBuilder.length() != 0)
             mSelectionBuilder.append(" AND ");
         mSelectionBuilder.append(ContactsContract.CommonDataKinds.Phone._ID)
@@ -302,6 +306,7 @@ public class ContactsGetterBuilder {
 
     /**
      * Get first contact of null if no contacts with these params
+     *
      * @param T class of object you want to get data
      */
     public <T extends ContactData> T firstOrNull(Class<T> T) {

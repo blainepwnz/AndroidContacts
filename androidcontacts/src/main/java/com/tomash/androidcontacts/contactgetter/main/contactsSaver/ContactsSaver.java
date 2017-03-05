@@ -1,4 +1,4 @@
-package com.tomash.androidcontacts.contactgetter.main;
+package com.tomash.androidcontacts.contactgetter.main.contactsSaver;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
@@ -15,17 +15,11 @@ import java.util.List;
 /**
  * Created by andrew on 2/25/17.
  */
-public class ContactsSaver {
+class ContactsSaver {
     private ContentResolver mResolver;
 
     public ContactsSaver(ContentResolver resolver) {
         mResolver = resolver;
-    }
-
-    public boolean deleteContactWithId(String contactId) {
-        Uri uri = Uri.withAppendedPath(ContactsContract.RawContacts.CONTENT_URI, contactId);
-        int deleted = mResolver.delete(uri, null, null);
-        return deleted > 0;
     }
 
     private void insertContacts(List<ContactData> contactDataList) {
