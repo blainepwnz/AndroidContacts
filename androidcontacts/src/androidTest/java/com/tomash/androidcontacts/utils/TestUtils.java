@@ -58,7 +58,7 @@ public class TestUtils {
         return object;
     }
 
-    public static ContactData getRandomContactData(Context ctx) {
+    public static ContactData createRandomContactData(Context ctx) {
         ContactData contactData = ContactDataFactory.createEmpty();
         contactData.setCompositeName(generateRandomString());
         contactData.setNickName(generateRandomString());
