@@ -19,7 +19,7 @@ Gradle Dependency
 **Step 2.** Add the dependency
 ```
 	dependencies {
-		compile 'com.tomash:androidcontacts:1.0.6'
+		compile 'com.tomash:androidcontacts:1.10.0'
 	}
 ```
 
@@ -35,12 +35,14 @@ Gradle Dependency
 Need to add permisson to read contacts in manifest.
 ```
 <uses-permission android:name="android.permission.READ_CONTACTS"/>
+<uses-permission android:name="android.permission.WRITE_CONTACTS"/>
 ```
 
 ##### Basic usage
 1. Get all contacts from android device
 2. Get specific data from contacts
 3. Querying inside contacts
+4. Save new contacts
 #### Type of fields you can get
 
 * Phones
@@ -74,7 +76,7 @@ Filter by contacts only with numbers
 
 Querying
 ------------------
-Library supports multi quering by contacts,plus you can implement your own filters.
+Library supports multi querying by contacts,plus you can implement your own filters.
 
 For example , query that gets all contacts with photo and containing sequence "abc" in name.
 ```
@@ -99,7 +101,44 @@ ContactData contactData  = new ContactsGetterBuilder(ctx)
    .getById(123);
 ```    
 
+Saving new contacts
+-------------------
 
+How to save contacts objects using library?
+
+1. Create ContactData object or use yours
+
+	```
+    ContactData data = ContactDataFactory.createEmpty();
+	```
+
+2. Fill it with data
+
+	```
+    data.setCompositeName("Name");
+    List<Email> emailList  = new ArrayList<>();
+    //creates email with custom label
+    emailList.add(new Email("hello@gmail.com","custom label"));
+    //creates email with home label
+    emailList.add(new Email(context,"home_email@gmail.com",Email.TYPE_HOME));
+    //cretaes email with default label
+    emailList.add(new Email(context,"default@gmail.com"));
+	```
+
+3. Save data to phone
+
+	```
+    //this id is id of newly created contact
+    int id =new ContactsSaverBuilder(context)
+        .saveContact(data);
+	```
+
+####Note
+To save list of contacts use:
+```
+    int[] id =new ContactsSaverBuilder(context)
+        .saveContactsList(contactDataList);
+```
 
 Using custom Contact object
 ------------------
@@ -130,6 +169,12 @@ List<MyAwesomeContactObject> objects  = new ContactsGetterBuilder(ctx)
 
 Whats new?
 ------------------
+### 1.1.0
+> * Added contacts saver
+> * Fixed bugs for Android api<18
+> * Covered contacts saver and getter with tests
+> * Reworked WithLabel objects creation
+
 ### 1.0.6
 > * Improved contacts getter performance
 
