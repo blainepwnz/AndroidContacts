@@ -214,7 +214,6 @@ public abstract class ContactData {
         ContactData contact = (ContactData) o;
 
         if (contactId != contact.contactId) return false;
-        if (lastModificationDate != contact.lastModificationDate) return false;
         if (!emailList.equals(contact.emailList)) return false;
         if (!phoneList.equals(contact.phoneList)) return false;
         if (!addressesList.equals(contact.addressesList)) return false;
