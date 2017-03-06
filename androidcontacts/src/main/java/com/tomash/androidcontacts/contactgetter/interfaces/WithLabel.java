@@ -100,7 +100,6 @@ public abstract class WithLabel {
 
         WithLabel withLabel = (WithLabel) o;
 
-        if (contactId != withLabel.contactId) return false;
         if (labelId != withLabel.labelId) return false;
         if (!mainData.equals(withLabel.mainData)) return false;
         return labelName.equals(withLabel.labelName);
