@@ -3,7 +3,10 @@ package com.tomash.androidcontacts.contactgetter.main.contactsSaver;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.provider.ContactsContract;
 
 import com.tomash.androidcontacts.contactgetter.entity.Address;
@@ -17,12 +20,13 @@ import com.tomash.androidcontacts.contactgetter.entity.Relation;
 import com.tomash.androidcontacts.contactgetter.entity.SpecialDate;
 import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by andrew on 2/25/17.
- */
 class ContactsSaver {
     private ContentResolver mResolver;
 
@@ -36,9 +40,9 @@ class ContactsSaver {
         ContentProviderResult[] results = createContacts(contactDataList);
         int[] ids = new int[results.length];
         for (int i = 0; i < results.length; i++) {
-            int id =Integer.parseInt(results[i].uri.getLastPathSegment());
+            int id = Integer.parseInt(results[i].uri.getLastPathSegment());
             generateInsertOperations(cvList, contactDataList.get(i), id);
-            ids[i]=id;
+            ids[i] = id;
         }
         mResolver.bulkInsert(ContactsContract.Data.CONTENT_URI, cvList.toArray(new ContentValues[cvList.size()]));
         return ids;
@@ -76,8 +80,43 @@ class ContactsSaver {
         Organization currentOrganization = contactData.getOrganization();
         if (!currentOrganization.getName().isEmpty() || !currentOrganization.getTitle().isEmpty())
             contentValuesList.add(getOrganizationTypeCV(currentOrganization, id));
+        saveUpdatedPhoto(id, contactData);
+    }
 
+    /**
+     * Save updated photo for the specified raw-contact.
+     */
+    private void saveUpdatedPhoto(long rawContactId, ContactData contactData) {
+        try {
+            InputStream inputStream;
+            if (contactData.getUpdatedPhotoUri() != null) {
+                inputStream = mResolver.openInputStream(contactData.getUpdatedPhotoUri());
+                contactData.setUpdatedPhotoUri(null);
+            } else if (contactData.getUpdatedBitmap() != null) {
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                contactData.getUpdatedBitmap().compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
+                byte[] bitmapdata = bos.toByteArray();
+                inputStream = new ByteArrayInputStream(bitmapdata);
+                contactData.setUpdatedBitmap(null);
+            } else {
+                return;
+            }
 
+            final Uri outputUri = Uri.withAppendedPath(
+                ContentUris.withAppendedId(ContactsContract.RawContacts.CONTENT_URI, rawContactId),
+                ContactsContract.RawContacts.DisplayPhoto.CONTENT_DIRECTORY);
+
+            FileOutputStream outputStream;
+            outputStream = mResolver
+                .openAssetFileDescriptor(outputUri, "rw").createOutputStream();
+            final byte[] buffer = new byte[16 * 1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0)
+                outputStream.write(buffer, 0, length);
+            outputStream.close();
+            inputStream.close();
+        } catch (Exception ignored) {
+        }
     }
 
     private ContentValues getWithLabelCV(String contentType, WithLabel withLabel, int id) {
@@ -145,10 +184,9 @@ class ContactsSaver {
         return contentValues;
     }
 
-
     private ContentProviderResult[] createContacts(List<ContactData> contact) {
         ContentProviderResult[] results = null;
-        ArrayList<ContentProviderOperation> op_list = new ArrayList<ContentProviderOperation>();
+        ArrayList<ContentProviderOperation> op_list = new ArrayList<>();
         for (int i = 0; i < contact.size(); i++) {
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)

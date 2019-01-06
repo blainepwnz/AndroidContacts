@@ -20,22 +20,23 @@ public class GetContactsTests extends BaseTest {
         List<ContactData> savedData = generateListOfRandomContacts();
         new ContactsSaverBuilder(mCtx)
             .saveContactsList(savedData);
-        for (ContactData randomContact : savedData) {
+        for (int i = 0; i < savedData.size(); i++) {
+            ContactData randomContact = savedData.get(i);
             List<ContactData> savedList = new ContactsGetterBuilder(mCtx)
                 .allFields()
                 .withName(randomContact.getCompositeName())
                 .buildList();
-            if (savedList.isEmpty())
+            if (savedList.size() == 1)
+                assertContacts(randomContact, savedList.get(0), ++i);
+            else
                 throw new AssertionError();
-            else if (savedList.size() == 1)
-                assertContacts(randomContact, savedList.get(0));
         }
     }
 
-    private List<ContactData> generateListOfRandomContacts() {
+    private List<ContactData> generateListOfRandomContacts() throws Exception {
         List<ContactData> dataList = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            dataList.add(TestUtils.createRandomContactData(mCtx));
+        for (int i = 1; i <= 100; i++) {
+            dataList.add(TestUtils.createRandomContactData(mCtx, i));
         }
         return dataList;
     }

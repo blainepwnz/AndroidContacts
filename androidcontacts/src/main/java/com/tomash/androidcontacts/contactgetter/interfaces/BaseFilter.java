@@ -2,25 +2,28 @@ package com.tomash.androidcontacts.contactgetter.interfaces;
 
 /**
  * <p>
- *     Base class for all filters
+ * Base class for all filters
  * </p>
+ *
  * @param <T> Type of container where from can get filterable data
  * @param <V> Type of filterable data
  */
 
-public abstract class BaseFilter<T,V> implements Filterable {
+public abstract class BaseFilter<T, V> implements Filterable {
     /**
      * <p>
-     *     This pattern will be used for all future filtering.
+     * This pattern will be used for all future filtering.
      * </p>
+     *
      * @return pattern for filtering
      */
     protected abstract V getFilterPattern();
 
     /**
      * <p>
-     *     Used for getting target that should be compared with patter to be filtered or not.
+     * Used for getting target that should be compared with patter to be filtered or not.
      * </p>
+     *
      * @param data container where from data could be obtained
      * @return target fro comparing with pattern
      */
@@ -28,9 +31,10 @@ public abstract class BaseFilter<T,V> implements Filterable {
 
     /**
      * <p>
-     *     Should return condition that will filter data
+     * Should return condition that will filter data
      * </p>
-     * @param data target data
+     *
+     * @param data    target data
      * @param pattern pattern to compare with
      * @return
      */

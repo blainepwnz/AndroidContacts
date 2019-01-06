@@ -23,7 +23,6 @@ import com.tomash.androidcontacts.contactgetter.entity.SpecialDate;
 import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
 import com.tomash.androidcontacts.contactgetter.main.FieldType;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,13 +83,7 @@ class ContactsGetter {
         }
         try {
             return (T) mContactDataClass.getConstructor().newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -177,7 +170,7 @@ class ContactsGetter {
                 date = c.getLong(c.getColumnIndex(ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP));
             String photoUriString = c.getString(c.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
             String lookupKey = c.getString(c.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-            Uri photoUri = photoUriString == null ? Uri.EMPTY : Uri.parse(c.getString(c.getColumnIndex(ContactsContract.Contacts.PHOTO_URI)));
+            Uri photoUri = photoUriString == null ? Uri.EMPTY : Uri.parse(photoUriString);
             contactsList.add((T) getContactData()
                 .setContactId(id)
                 .setLookupKey(lookupKey)

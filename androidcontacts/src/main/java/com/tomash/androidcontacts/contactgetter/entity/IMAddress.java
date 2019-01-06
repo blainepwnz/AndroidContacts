@@ -5,10 +5,6 @@ import android.provider.ContactsContract;
 
 import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
 
-/**
- * Created by Andrew on 25.02.2017.
- */
-
 public class IMAddress extends WithLabel {
     public static final int PROTOCOL_AIM = 0;
     public static final int PROTOCOL_MSN = 1;

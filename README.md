@@ -19,20 +19,19 @@ Gradle Dependency
 **Step 2.** Add the dependency
 ```
 	dependencies {
-		compile 'com.tomash:androidcontacts:1.10.0'
+		implementation 'com.tomash:androidcontacts:1.11.0'
 	}
 ```
-
-
 
 
  Basic Usage
 ------------------
 
 
->The minimum API level supported by this library is API 15.
+>The minimum API level supported by this library is API 15.  
+>Library is not handling 23+ API permission.
 
-Need to add permisson to read contacts in manifest.
+Need to add permission to read contacts in manifest.
 ```
 <uses-permission android:name="android.permission.READ_CONTACTS"/>
 <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
@@ -42,7 +41,8 @@ Need to add permisson to read contacts in manifest.
 1. Get all contacts from android device
 2. Get specific data from contacts
 3. Querying inside contacts
-4. Save new contacts
+4. Save new contacts  
+
 #### Type of fields you can get
 
 * Phones
@@ -121,7 +121,7 @@ How to save contacts objects using library?
     emailList.add(new Email("hello@gmail.com","custom label"));
     //creates email with home label
     emailList.add(new Email(context,"home_email@gmail.com",Email.TYPE_HOME));
-    //cretaes email with default label
+    //creates email with default label
     emailList.add(new Email(context,"default@gmail.com"));
 	```
 
@@ -169,7 +169,11 @@ List<MyAwesomeContactObject> objects  = new ContactsGetterBuilder(ctx)
 
 Whats new?
 ------------------
-### 1.1.0
+### 1.11.0
+> * Added possibility to save bitmap or uri with photos of contact
+> * Minor refactor  
+
+### 1.10.0
 > * Added contacts saver
 > * Fixed bugs for Android api<18
 > * Covered contacts saver and getter with tests

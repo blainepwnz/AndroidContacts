@@ -24,13 +24,13 @@ public enum Sorting {
     BY_ID_ASC {
         @Override
         public String getSorting() {
-            return ContactsContract.CommonDataKinds.Phone._ID +" ASC";
+            return ContactsContract.CommonDataKinds.Phone._ID + " ASC";
         }
     },
     BY_ID_DESC {
         @Override
         public String getSorting() {
-            return ContactsContract.CommonDataKinds.Phone._ID +" DESC";
+            return ContactsContract.CommonDataKinds.Phone._ID + " DESC";
         }
     };
 

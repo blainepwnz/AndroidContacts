@@ -5,10 +5,6 @@ import android.provider.ContactsContract;
 
 import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
 
-/**
- * Created by andrew on 2/24/17.
- */
-
 public class Email extends WithLabel {
     public static final int TYPE_HOME = 1;
     public static final int TYPE_WORK = 2;
@@ -28,7 +24,7 @@ public class Email extends WithLabel {
     }
 
     @Override
-    protected String getLabelNameResId(Context ctx,int id) {
+    protected String getLabelNameResId(Context ctx, int id) {
         return ctx.getString(ContactsContract.CommonDataKinds.Email.getTypeLabelResource(id));
     }
 
@@ -39,7 +35,7 @@ public class Email extends WithLabel {
 
     @Override
     protected boolean isValidLabel(int id) {
-        return id>=1 && id<=4;
+        return id >= 1 && id <= 4;
     }
 
     @Override
