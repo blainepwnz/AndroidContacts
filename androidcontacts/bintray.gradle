@@ -1,0 +1,46 @@
+apply plugin: 'com.jfrog.bintray'
+apply from: 'deps.gradle'
+
+def mSiteUrl = 'https://github.com/blainepwnz/AndroidContacts'
+def mGitUrl = 'https://github.com/blainepwnz/AndroidContacts.git'
+
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+}
+android {
+    compileSdkVersion versions.compileSdkVersion
+}
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = versions.artifact
+
+    publishedGroupId = 'com.tomash'
+    libraryName = versions.artifact
+    artifact = versions.artifact
+
+    libraryDescription = 'Android library for contact aggregation'
+
+    // Your github repo link
+    siteUrl = mSiteUrl
+    gitUrl = mGitUrl
+    githubRepository = 'blainepwnz/AndroidContacts'
+
+    libraryVersion = versions.publishVersion
+
+    developerId = 'blainepwnz'
+    developerName = 'Andrew Tomash'
+    developerEmail = 'andrew.tomash@titanium-soft.com'
+    licenseName = 'MIT'
+    licenseUrl = 'https://opensource.org/licenses/MIT'
+    allLicenses = ["MIT"]
+}
+bintray {
+    pkg {
+        userOrg = "blainepwnz"
+    }
+}
+apply from: 'https://raw.githubusercontent.com/nisrulz/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nisrulz/JCenter/master/bintrayv1.gradle'
+

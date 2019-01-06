@@ -1,10 +1,8 @@
 package com.tomash.androidcontacts.contactgetter.entity;
 
-
-
 public class Group {
     private int groupId;
-    private String groupTitle="";
+    private String groupTitle = "";
 
     public int getGroupId() {
         return groupId;
@@ -20,7 +18,7 @@ public class Group {
     }
 
     public Group setGroupTitle(String groupTitle) {
-        if(groupTitle==null) return this;
+        if (groupTitle == null) return this;
         this.groupTitle = groupTitle;
         return this;
     }

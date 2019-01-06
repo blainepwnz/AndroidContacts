@@ -1,5 +1,6 @@
 package com.tomash.androidcontacts.contactgetter.entity;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 
 import java.util.ArrayList;
@@ -25,7 +26,8 @@ public abstract class ContactData {
     private NameData nameData = new NameData();
     private String compositeName;
     private long lastModificationDate;
-
+    private Uri updatedPhotoUri;
+    private Bitmap updatedBitmap;
 
     public int getContactId() {
         return contactId;
@@ -65,7 +67,37 @@ public abstract class ContactData {
 
     public ContactData setPhotoUri(Uri photoUri) {
         if (photoUri == null) return this;
+        if (photoUri != Uri.EMPTY)
+            updatedPhotoUri = photoUri;
         this.photoUri = photoUri;
+        return this;
+    }
+
+    public Uri getUpdatedPhotoUri() {
+        return updatedPhotoUri;
+    }
+
+    /**
+     * Used to specify bitmap uri that should be used for creating this contact
+     * Will be nullified as soon as contact will be created
+     */
+    public ContactData setUpdatedPhotoUri(Uri updatedPhotoUri) {
+        this.updatedPhotoUri = updatedPhotoUri;
+        return this;
+    }
+
+    /**
+     * Use {@link ContactData#getPhotoUri()} to get real URI of this contact
+     */
+    public Bitmap getUpdatedBitmap() {
+        return updatedBitmap;
+    }
+
+    /**
+     * Used only to specify directly bitmap that should be used to upload this contact to db1
+     */
+    public ContactData setUpdatedBitmap(Bitmap updatedBitmap) {
+        this.updatedBitmap = updatedBitmap;
         return this;
     }
 
@@ -110,12 +142,11 @@ public abstract class ContactData {
 
     /**
      * <p>
-     *     Gets last modification timestamp in Unix time
+     * Gets last modification timestamp in Unix time
      * </p>
      * <p>
-     *     AVAILABLE FROM 18 API
+     * AVAILABLE FROM 18 API
      * </p>
-     *
      */
     public long getLastModificationDate() {
         return lastModificationDate;
@@ -201,7 +232,7 @@ public abstract class ContactData {
     }
 
     public ContactData setGroupList(List<Group> groupList) {
-        if(groupList==null) return this;
+        if (groupList == null) return this;
         this.groupList = groupList;
         return this;
     }

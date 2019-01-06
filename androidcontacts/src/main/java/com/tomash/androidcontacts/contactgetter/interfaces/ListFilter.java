@@ -6,17 +6,18 @@ import java.util.List;
 
 /**
  * <p>
- *     Abstract class for filtering contacts with fields that are lists.
+ * Abstract class for filtering contacts with fields that are lists.
  * </p>
  *
  * @param <T> type of container of target data
  * @param <V> type of field you want to filter
  */
 
-public abstract class ListFilter<T,V> extends BaseFilter<T,V> {
+public abstract class ListFilter<T, V> extends BaseFilter<T, V> {
 
     /**
      * User to get container of filterable data
+     *
      * @param contact contact object where from to get data
      * @return list with target data
      */

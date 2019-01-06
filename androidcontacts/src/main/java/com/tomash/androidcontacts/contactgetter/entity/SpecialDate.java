@@ -5,10 +5,6 @@ import android.provider.ContactsContract;
 
 import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
 
-/**
- * Created by andrew on 2/24/17.
- */
-
 public class SpecialDate extends WithLabel {
     public static final int TYPE_ANNIVERSARY = 1;
     public static final int TYPE_OTHER = 2;

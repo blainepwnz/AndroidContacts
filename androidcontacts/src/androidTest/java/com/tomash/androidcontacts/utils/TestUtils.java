@@ -3,6 +3,7 @@ package com.tomash.androidcontacts.utils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.ContactsContract;
 
@@ -17,49 +18,29 @@ import com.tomash.androidcontacts.contactgetter.entity.SpecialDate;
 import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
 import com.tomash.androidcontacts.contactgetter.main.ContactDataFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.security.SecureRandom;
 import java.util.Random;
-
-/**
- * Created by root on 3/6/17.
- */
 
 public class TestUtils {
 
     private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static SecureRandom rnd = new SecureRandom();
 
-    public static <T extends WithLabel> T generateRandomWithLabel(Class<T> clazz, Context ctx) {
+    public static <T extends WithLabel> T generateRandomWithLabel(Class<T> clazz, Context ctx) throws Exception {
         String mainData = randomString(7);
         int labelId = new Random().nextInt(3) + 1;
-        T object = null;
-        try {
-            object = clazz.getConstructor(Context.class, String.class, int.class).newInstance(ctx, mainData, labelId);
-        } catch (InstantiationException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
-        } catch (NoSuchMethodException e) {
-        }
-        return object;
+        return clazz.getConstructor(Context.class, String.class, int.class).newInstance(ctx, mainData, labelId);
     }
 
-    public static <T extends WithLabel> T generateRandomWithLabel(Class<T> clazz) {
+    public static <T extends WithLabel> T generateRandomWithLabel(Class<T> clazz) throws Exception {
         String mainData = randomString(8);
         String labelName = randomString(4);
-        T object = null;
-        try {
-            object = clazz.getConstructor(String.class, String.class).newInstance(mainData, labelName);
-        } catch (InstantiationException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
-        } catch (NoSuchMethodException e) {
-        }
-        return object;
+        return clazz.getConstructor(String.class, String.class).newInstance(mainData, labelName);
     }
 
-    public static ContactData createRandomContactData(Context ctx) {
+    public static ContactData createRandomContactData(Context ctx, int bitmapSize) throws Exception {
         ContactData contactData = ContactDataFactory.createEmpty();
+        contactData.setUpdatedBitmap(Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888));
         contactData.setCompositeName(generateRandomString());
         contactData.setNickName(generateRandomString());
         contactData.setSipAddress(generateRandomString());
@@ -92,7 +73,6 @@ public class TestUtils {
     public static String generateRandomString() {
         return randomString(7);
     }
-
 
     private static String randomString(int len) {
         StringBuilder sb = new StringBuilder(len);

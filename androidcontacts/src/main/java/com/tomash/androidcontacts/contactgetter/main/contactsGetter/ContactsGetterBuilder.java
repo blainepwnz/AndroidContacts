@@ -14,10 +14,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Created by root on 3/3/17.
- */
-
 public class ContactsGetterBuilder {
     private Context mCtx;
     private Sorting mSortOrder = Sorting.BY_DISPLAY_NAME_ASC;

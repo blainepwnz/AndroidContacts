@@ -2,10 +2,6 @@ package com.tomash.androidcontacts.contactgetter.interfaces;
 
 import android.content.Context;
 
-/**
- * Created by Andrew on 24.02.2017.
- */
-
 public abstract class WithLabel {
     private String mainData;
     private int contactId;
@@ -14,7 +10,8 @@ public abstract class WithLabel {
 
     /**
      * Used to create WithLabel objects with custom label
-     * @param mainData main data from this object , e.g. phone number , email
+     *
+     * @param mainData  main data from this object , e.g. phone number , email
      * @param labelName name of custom label
      */
     public WithLabel(String mainData, String labelName) {
@@ -26,15 +23,15 @@ public abstract class WithLabel {
 
     /**
      * <p>
-     *Used to create WithLabel objects with specific in label
+     * Used to create WithLabel objects with specific in label
      * </p>
      * <p>
-     *     In case of invalid label will use default label for this type of data
+     * In case of invalid label will use default label for this type of data
      * </p>
      *
-     * @param ctx context
+     * @param ctx      context
      * @param mainData main data from this object , e.g. phone number , email
-     * @param labelId id for label , used to get name for this label with system default language , e.g. {@link com.tomash.androidcontacts.contactgetter.entity.PhoneNumber#TYPE_HOME}
+     * @param labelId  id for label , used to get name for this label with system default language , e.g. {@link com.tomash.androidcontacts.contactgetter.entity.PhoneNumber#TYPE_HOME}
      */
     public WithLabel(Context ctx, String mainData, int labelId) {
         this.mainData = mainData;
@@ -45,11 +42,12 @@ public abstract class WithLabel {
 
 
     /**
-     <p>
-     Used to create WithLabel objects with default label
-     </p>
-     * @param ctx context
-     * @param mainData  main data from this object , e.g. phone number , email
+     * <p>
+     * Used to create WithLabel objects with default label
+     * </p>
+     *
+     * @param ctx      context
+     * @param mainData main data from this object , e.g. phone number , email
      */
     public WithLabel(Context ctx, String mainData) {
         this.mainData = mainData;

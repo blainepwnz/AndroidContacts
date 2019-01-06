@@ -1,85 +1,24 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.jfrog.bintray'
 
-def buildName = "1.10.0"
-def buildCode = 8
-def mSiteUrl = 'https://github.com/blainepwnz/AndroidContacts'
-def mGitUrl = 'https://github.com/blainepwnz/AndroidContacts.git'
-
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
+apply from: 'bintray.gradle'
+apply from: 'deps.gradle'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion versions.compileSdkVersion
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 25
-        versionCode buildCode
-        versionName buildName
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+        targetSdkVersion 28
+        versionCode versions.buildCode
+        versionName versions.publishVersion
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 }
 
 dependencies {
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test:rules:1.1.1'
 }
-
-bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
-
-    configurations = ['archives']
-    pkg {
-        userOrg = "blainepwnz"
-        repo = "maven"
-        name = "androidcontacts"
-        desc = 'Android library for contact aggregation'
-        websiteUrl = mSiteUrl
-        vcsUrl = mGitUrl
-        licenses = ["MIT"]
-        publish = true
-        version {
-            name = buildName
-            vcsTag = buildName
-        }
-    }
-}
-ext {
-    bintrayRepo = 'maven'
-    bintrayName = 'androidcontacts'   // Has to be same as your library module name
-
-    publishedGroupId = 'com.tomash'
-    libraryName = 'androidcontacts'
-    artifact = 'androidcontacts'     // Has to be same as your library module name
-
-    libraryDescription = 'Android library for contact aggregation'
-
-    // Your github repo link
-    siteUrl = mSiteUrl
-    gitUrl = mGitUrl
-    githubRepository= 'blainepwnz/AndroidContacts'
-
-    libraryVersion = buildName
-
-    developerId = 'blainepwnz'
-    developerName = 'Andrew Tomash'
-    developerEmail = 'kpubedko@gmail.com'
-    licenseName = 'MIT'
-    licenseUrl = 'https://opensource.org/licenses/MIT'
-    allLicenses = ["MIT"]
-}
-
-// Place it at the end of the file
-apply from: 'https://raw.githubusercontent.com/nisrulz/JCenter/master/installv1.gradle'
-apply from: 'https://raw.githubusercontent.com/nisrulz/JCenter/master/bintrayv1.gradle'
-
 
