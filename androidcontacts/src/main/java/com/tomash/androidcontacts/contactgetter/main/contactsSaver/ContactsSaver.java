@@ -184,13 +184,14 @@ class ContactsSaver {
         return contentValues;
     }
 
-    private ContentProviderResult[] createContacts(List<ContactData> contact) {
+    private ContentProviderResult[] createContacts(List<ContactData> contacts) {
         ContentProviderResult[] results = null;
         ArrayList<ContentProviderOperation> op_list = new ArrayList<>();
-        for (int i = 0; i < contact.size(); i++) {
+        for (int i = 0; i < contacts.size(); i++) {
+            ContactData contactData = contacts.get(i);
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
-                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
-                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, contactData.getAccountType())
+                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, contactData.getAccountName())
                 .build());
         }
         try {
