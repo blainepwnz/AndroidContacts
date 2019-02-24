@@ -19,7 +19,7 @@ Gradle Dependency
 **Step 2.** Add the dependency
 ```
 	dependencies {
-		implementation 'com.tomash:androidcontacts:1.11.0'
+		implementation 'com.tomash:androidcontacts:1.12.0'
 	}
 ```
 
@@ -169,6 +169,9 @@ List<MyAwesomeContactObject> objects  = new ContactsGetterBuilder(ctx)
 
 Whats new?
 ------------------
+### 1.12.0
+> * Added account type and account name in ContactData to support saving and getting account names for contacts  
+
 ### 1.11.0
 > * Added possibility to save bitmap or uri with photos of contact
 > * Minor refactor  

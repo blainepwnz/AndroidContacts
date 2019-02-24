@@ -25,6 +25,8 @@ public abstract class ContactData {
     private Organization organization = new Organization();
     private NameData nameData = new NameData();
     private String compositeName;
+    private String accountName;
+    private String accountType;
     private long lastModificationDate;
     private Uri updatedPhotoUri;
     private Bitmap updatedBitmap;
@@ -234,6 +236,24 @@ public abstract class ContactData {
     public ContactData setGroupList(List<Group> groupList) {
         if (groupList == null) return this;
         this.groupList = groupList;
+        return this;
+    }
+
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public ContactData setAccountName(String accountName) {
+        this.accountName = accountName;
+        return this;
+    }
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public ContactData setAccountType(String accountType) {
+        this.accountType = accountType;
         return this;
     }
 
