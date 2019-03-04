@@ -48,12 +48,12 @@ public class TestUtils {
         contactData.setAccountName(generateRandomString());
         contactData.setOrganization(new Organization(generateRandomString(), generateRandomString()));
         contactData.setNote(generateRandomString());
-        contactData.getPhoneList().add(TestUtils.generateRandomWithLabel(PhoneNumber.class));
+        contactData.getPhoneList().add(generateRandomWithLabel(PhoneNumber.class));
         contactData.getPhoneList().add(generateRandomWithLabel(PhoneNumber.class, ctx));
         contactData.getPhoneList().add(generateRandomWithLabel(PhoneNumber.class, ctx));
-        contactData.getAddressesList().add(TestUtils.generateRandomWithLabel(Address.class, ctx));
-        contactData.getAddressesList().add(TestUtils.generateRandomWithLabel(Address.class));
-        contactData.getAddressesList().add(TestUtils.generateRandomWithLabel(Address.class, ctx));
+        contactData.getAddressesList().add(generateRandomWithLabel(Address.class, ctx));
+        contactData.getAddressesList().add(generateRandomWithLabel(Address.class));
+        contactData.getAddressesList().add(generateRandomWithLabel(Address.class, ctx));
         contactData.getEmailList().add(generateRandomWithLabel(Email.class));
         contactData.getEmailList().add(generateRandomWithLabel(Email.class, ctx));
         contactData.getEmailList().add(generateRandomWithLabel(Email.class, ctx));
