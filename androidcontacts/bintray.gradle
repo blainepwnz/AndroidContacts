@@ -1,5 +1,5 @@
 apply plugin: 'com.jfrog.bintray'
-apply from: 'deps.gradle'
+apply from: '../deps.gradle'
 
 def mSiteUrl = 'https://github.com/blainepwnz/AndroidContacts'
 def mGitUrl = 'https://github.com/blainepwnz/AndroidContacts.git'

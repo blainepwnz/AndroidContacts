@@ -1,7 +1,10 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 apply from: 'bintray.gradle'
-apply from: 'deps.gradle'
+apply from: '../deps.gradle'
 
 android {
     compileSdkVersion versions.compileSdkVersion
@@ -14,11 +17,26 @@ android {
         versionName versions.publishVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    androidExtensions {
+        experimental = true
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        main.kotlin.srcDirs = ['src/main/kotlin', 'src/main/java']
+        test.kotlin.srcDirs = ['src/test/kotlin', 'src/test/java']
+        test.java.srcDirs = ['src/test/kotlin', 'src/test/java']
+    }
+
 }
 
 dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test:rules:1.1.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin_version"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$versions.kotlin_version"
+    testImplementation "org.jetbrains.kotlin:kotlin-test:$versions.kotlin_version"
 }
 

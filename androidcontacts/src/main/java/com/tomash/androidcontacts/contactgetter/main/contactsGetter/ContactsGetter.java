@@ -22,7 +22,6 @@ import com.tomash.androidcontacts.contactgetter.entity.Relation;
 import com.tomash.androidcontacts.contactgetter.entity.SpecialDate;
 import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
 import com.tomash.androidcontacts.contactgetter.main.FieldType;
-import com.tomash.androidcontacts.contactgetter.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,8 +77,8 @@ class ContactsGetter {
             android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1 ? CONTACTS_PROJECTION : CONTACTS_PROJECTION_LOW_API, selection, selectionArgs, ordering);
     }
 
-    private Cursor getContactsCursorWithAdditionalData(String ordering, String selection, String[] selectionArgs) {
-        return mResolver.query(ContactsContract.RawContacts.CONTENT_URI, ADDITIONAL_DATA_PROJECTION, selection, selectionArgs, ordering);
+    private Cursor getContactsCursorWithAdditionalData() {
+        return mResolver.query(ContactsContract.RawContacts.CONTENT_URI, ADDITIONAL_DATA_PROJECTION, null, null, null);
     }
 
     private <T extends ContactData> T getContactData() {
@@ -95,13 +94,13 @@ class ContactsGetter {
         return null;
     }
 
-
     <T extends ContactData> List<T> getContacts() {
         Cursor mainCursor = getContactsCursorWithSelection(mSorting, mSelection, mSelectionArgs);
-        Cursor additionalDataCursor = getContactsCursorWithAdditionalData(mSorting, mSelection, mSelectionArgs);
+        Cursor additionalDataCursor = getContactsCursorWithAdditionalData();
         SparseArray<T> contactsSparse = new SparseArray<>();
+        List<T> result = new ArrayList<>();
         if (mainCursor == null)
-            return Utils.getValuesFromSparseArray(contactsSparse);
+            return result;
         SparseArray<List<PhoneNumber>> phonesDataMap = mEnabledFields.contains(FieldType.PHONE_NUMBERS) ? getDataMap(getCursorFromContentType(WITH_LABEL_PROJECTION, Phone.CONTENT_ITEM_TYPE), new WithLabelCreator<PhoneNumber>() {
             @Override
             public PhoneNumber create(String mainData, int contactId, int labelId, String labelName) {
@@ -178,7 +177,7 @@ class ContactsGetter {
             String photoUriString = mainCursor.getString(mainCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
             String lookupKey = mainCursor.getString(mainCursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
             Uri photoUri = photoUriString == null ? Uri.EMPTY : Uri.parse(photoUriString);
-            contactsSparse.put(id, (T) getContactData()
+            T data = (T) getContactData()
                 .setContactId(id)
                 .setLookupKey(lookupKey)
                 .setLastModificationDate(date)
@@ -196,7 +195,9 @@ class ContactsGetter {
                 .setNameData(nameDataMap.get(id))
                 .setPhotoUri(photoUri)
                 .setGroupList(groupsDataMap.get(id))
-                .setCompositeName(mainCursor.getString(mainCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))));
+                .setCompositeName(mainCursor.getString(mainCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)));
+            contactsSparse.put(id, data);
+            result.add(data);
         }
         mainCursor.close();
         while (additionalDataCursor.moveToNext()) {
@@ -210,7 +211,7 @@ class ContactsGetter {
             }
         }
         additionalDataCursor.close();
-        return Utils.getValuesFromSparseArray(contactsSparse);
+        return result;
     }
 
 
