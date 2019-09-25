@@ -170,6 +170,9 @@ List<MyAwesomeContactObject> objects  = new ContactsGetterBuilder(ctx)
 Whats new?
 ------------------
 ### 1.12.1
+> * Fixed issue with phone formatting during searching by number
+
+### 1.12.1
 > * Fixed regressing with filters
 > * Fixed regression with sorting
 

@@ -30,7 +30,11 @@ public class FilterUtils {
 
             @Override
             protected boolean getFilterCondition(String data, String pattern) {
-                return data.toLowerCase().contains(pattern.toLowerCase());
+                return formatNumber(data).contains(pattern);
+            }
+
+            private String formatNumber(String number) {
+                return number.replaceAll("[^0-9+]", "");
             }
         };
     }

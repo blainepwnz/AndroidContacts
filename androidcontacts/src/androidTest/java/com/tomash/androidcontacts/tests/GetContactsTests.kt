@@ -90,7 +90,7 @@ class GetContactsTests : BaseTest() {
             //adding numbers from example
             it.forEach { it.phoneList.clear() }
             it[0].phoneList.run { add(PhoneNumber("+631230001234", "1234")) }
-            it[1].phoneList.run { add(PhoneNumber("+11230001234", "1234")) }
+            it[1].phoneList.run { add(PhoneNumber("+1 123 000 1234", "1234")) }
             it[2].phoneList.run { add(PhoneNumber("01230001234", "1234")) }
             //adding one number that should be filtered
             it[3].phoneList.run { add(PhoneNumber("001234", "1234")) }
@@ -98,7 +98,7 @@ class GetContactsTests : BaseTest() {
         //getting contacts from android
         val savedList = getList { withPhoneLike("1230001234") }
         //asserting that all of them were added
-        Assert.assertTrue(savedList.size == 3)
+        Assert.assertEquals(3, savedList.size)
     }
 
     @Test
