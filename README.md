@@ -19,7 +19,7 @@ Gradle Dependency
 **Step 2.** Add the dependency
 ```
 	dependencies {
-		implementation 'com.tomash:androidcontacts:1.12.2'
+		implementation 'com.tomash:androidcontacts:1.12.3'
 	}
 ```
 
@@ -169,6 +169,9 @@ List<MyAwesomeContactObject> objects  = new ContactsGetterBuilder(ctx)
 
 Whats new?
 ------------------
+### 1.12.3
+> * Removed unnecessary properties from manifest
+
 ### 1.12.2
 > * Fixed issue with phone formatting during searching by number
 
