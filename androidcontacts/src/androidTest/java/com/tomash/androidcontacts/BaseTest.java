@@ -50,6 +50,7 @@ public class BaseTest {
         Assert.assertEquals(userContact.getOrganization(), contactFromDb.getOrganization());
         Assert.assertEquals(userContact.getAccountType(), contactFromDb.getAccountType());
         Assert.assertEquals(userContact.getAccountName(), contactFromDb.getAccountName());
+        Assert.assertEquals(userContact.isFavorite(), contactFromDb.isFavorite());
         for (Email email : userContact.getEmailList()) {
             Assert.assertTrue(contactFromDb.getEmailList().contains(email));
         }

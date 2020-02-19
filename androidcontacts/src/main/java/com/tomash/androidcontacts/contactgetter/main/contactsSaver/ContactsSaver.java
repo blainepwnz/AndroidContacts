@@ -192,6 +192,7 @@ class ContactsSaver {
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, contactData.getAccountType())
                 .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, contactData.getAccountName())
+                .withValue(ContactsContract.RawContacts.STARRED, contactData.isFavorite() ? 1 : 0)
                 .build());
         }
         try {

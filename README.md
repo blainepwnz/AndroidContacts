@@ -19,12 +19,12 @@ Gradle Dependency
 **Step 2.** Add the dependency
 ```
 	dependencies {
-		implementation 'com.tomash:androidcontacts:1.12.3'
+		implementation 'com.tomash:androidcontacts:1.12.4'
 	}
 ```
 
 
- Basic Usage
+Basic Usage
 ------------------
 
 
@@ -59,6 +59,7 @@ Need to add permission to read contacts in manifest.
 * Photo
 * Instant Messenger Addresses
 * Lookup key
+* Is favorite
 
 Easiest way to get all data by one time:
 ```
@@ -97,7 +98,7 @@ new ContactsGetterBuilder(ctx)
 Get contact by local contact id
 ```
 ContactData contactData  = new ContactsGetterBuilder(ctx)
-   .addField(FieldType.EMAILS,FieldType.ADDRESS,FieldType.NAME_DATA)
+   .addField(FieldType.EMAILS, FieldType.ADDRESS, FieldType.NAME_DATA)
    .getById(123);
 ```    
 
@@ -129,20 +130,20 @@ How to save contacts objects using library?
 
 	```
     //this id is id of newly created contact
-    int id =new ContactsSaverBuilder(context)
+    int id = new ContactsSaverBuilder(context)
         .saveContact(data);
 	```
 
 ####Note
 To save list of contacts use:
 ```
-    int[] id =new ContactsSaverBuilder(context)
+    int[] id = new ContactsSaverBuilder(context)
         .saveContactsList(contactDataList);
 ```
 
 Using custom Contact object
 ------------------
-#####How to use library with your custom contact class?
+##### How to use library with your custom contact class?
 1. Inherit from ContactData
 2. Add empty constructor
 3. That's all!
@@ -169,6 +170,9 @@ List<MyAwesomeContactObject> objects  = new ContactsGetterBuilder(ctx)
 
 Whats new?
 ------------------
+### 1.12.4
+> * Added isFavorite to detect and save favorite contacts
+
 ### 1.12.3
 > * Removed unnecessary properties from manifest
 

@@ -51,9 +51,9 @@ class ContactsGetter {
     private static final String ID_KEY = "contact_id";
     private static final String[] WITH_LABEL_PROJECTION = new String[]{ID_KEY, MAIN_DATA_KEY, LABEL_DATA_KEY, CUSTOM_LABEL_DATA_KEY};
     private static final String[] CONTACTS_PROJECTION = new String[]{ContactsContract.Contacts._ID, ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP,
-        ContactsContract.Contacts.PHOTO_URI, ContactsContract.Contacts.LOOKUP_KEY, ContactsContract.Contacts.DISPLAY_NAME};
+        ContactsContract.Contacts.PHOTO_URI, ContactsContract.Contacts.LOOKUP_KEY, ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.Contacts.STARRED};
     private static final String[] CONTACTS_PROJECTION_LOW_API = new String[]{ContactsContract.Contacts._ID,
-        ContactsContract.Contacts.PHOTO_URI, ContactsContract.Contacts.LOOKUP_KEY, ContactsContract.Contacts.DISPLAY_NAME};
+        ContactsContract.Contacts.PHOTO_URI, ContactsContract.Contacts.LOOKUP_KEY, ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.Contacts.STARRED};
     private static final String[] ADDITIONAL_DATA_PROJECTION = new String[]{ContactsContract.Contacts._ID,
         ContactsContract.RawContacts.ACCOUNT_TYPE, ContactsContract.RawContacts.ACCOUNT_NAME};
     private Class<? extends ContactData> mContactDataClass;
@@ -176,6 +176,7 @@ class ContactsGetter {
                 date = mainCursor.getLong(mainCursor.getColumnIndex(ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP));
             String photoUriString = mainCursor.getString(mainCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
             String lookupKey = mainCursor.getString(mainCursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+            boolean isFavorite = mainCursor.getInt(mainCursor.getColumnIndex(ContactsContract.Contacts.STARRED)) == 1;
             Uri photoUri = photoUriString == null ? Uri.EMPTY : Uri.parse(photoUriString);
             T data = (T) getContactData()
                 .setContactId(id)
@@ -194,6 +195,7 @@ class ContactsGetter {
                 .setSipAddress(sipDataMap.get(id))
                 .setNameData(nameDataMap.get(id))
                 .setPhotoUri(photoUri)
+                .setFavorite(isFavorite)
                 .setGroupList(groupsDataMap.get(id))
                 .setCompositeName(mainCursor.getString(mainCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)));
             contactsSparse.put(id, data);

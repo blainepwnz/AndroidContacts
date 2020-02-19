@@ -48,6 +48,7 @@ public class TestUtils {
         contactData.setAccountName(generateRandomString());
         contactData.setOrganization(new Organization(generateRandomString(), generateRandomString()));
         contactData.setNote(generateRandomString());
+        contactData.setFavorite(rnd.nextBoolean());
         contactData.getPhoneList().add(generateRandomWithLabel(PhoneNumber.class));
         contactData.getPhoneList().add(generateRandomWithLabel(PhoneNumber.class, ctx));
         contactData.getPhoneList().add(generateRandomWithLabel(PhoneNumber.class, ctx));

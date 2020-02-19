@@ -30,6 +30,7 @@ public abstract class ContactData {
     private long lastModificationDate;
     private Uri updatedPhotoUri;
     private Bitmap updatedBitmap;
+    private boolean isFavorite;
 
     public int getContactId() {
         return contactId;
@@ -229,6 +230,15 @@ public abstract class ContactData {
         return this;
     }
 
+    public ContactData setFavorite(boolean favorite) {
+        isFavorite = favorite;
+        return this;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
     public List<Group> getGroupList() {
         return groupList;
     }
@@ -279,6 +289,7 @@ public abstract class ContactData {
         if (!photoUri.equals(contact.photoUri)) return false;
         if (!organization.equals(contact.organization)) return false;
         if (!nameData.equals(contact.nameData)) return false;
+        if (isFavorite != contact.isFavorite) return false;
         return compositeName.equals(contact.compositeName);
 
     }
