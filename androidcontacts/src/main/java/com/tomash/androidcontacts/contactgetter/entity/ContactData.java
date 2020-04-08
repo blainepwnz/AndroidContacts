@@ -290,8 +290,7 @@ public abstract class ContactData {
         if (!organization.equals(contact.organization)) return false;
         if (!nameData.equals(contact.nameData)) return false;
         if (isFavorite != contact.isFavorite) return false;
-        return compositeName.equals(contact.compositeName);
-
+        return (compositeName == null ? contact.compositeName == null : compositeName.equals(contact.compositeName));
     }
 
     public String getLookupKey() {
