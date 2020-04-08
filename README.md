@@ -2,7 +2,7 @@ AndroidContacts
 ===================
 ----------------------------------
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/blainepwnz/AndroidContacts/blob/master/LICENSE.txt)
-[ ![Download](https://api.bintray.com/packages/blainepwnz/maven/androidcontacts/images/download.svg) ](https://bintray.com/blainepwnz/maven/androidcontacts/_latestVersion)
+[![Download](https://api.bintray.com/packages/blainepwnz/maven/androidcontacts/images/download.svg) ](https://bintray.com/blainepwnz/maven/androidcontacts/_latestVersion)
 
 
 Gradle Dependency
@@ -19,7 +19,7 @@ Gradle Dependency
 **Step 2.** Add the dependency
 ```
 	dependencies {
-		implementation 'com.tomash:androidcontacts:1.12.4'
+		implementation 'com.tomash:androidcontacts:1.12.5'
 	}
 ```
 
@@ -170,6 +170,9 @@ List<MyAwesomeContactObject> objects  = new ContactsGetterBuilder(ctx)
 
 Whats new?
 ------------------
+### 1.12.5
+> * Fixed possibility of NPE during equals of contact data
+
 ### 1.12.4
 > * Added isFavorite to detect and save favorite contacts
 
