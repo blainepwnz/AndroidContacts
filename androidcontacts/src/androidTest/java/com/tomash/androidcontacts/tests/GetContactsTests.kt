@@ -9,7 +9,7 @@ import com.tomash.androidcontacts.contactgetter.main.contactsSaver.ContactsSaver
 import com.tomash.androidcontacts.utils.TestUtils
 import org.junit.Assert
 import org.junit.Test
-import java.util.*
+import java.util.ArrayList
 
 class GetContactsTests : BaseTest() {
 
@@ -89,16 +89,37 @@ class GetContactsTests : BaseTest() {
             //removing all random phones
             //adding numbers from example
             it.forEach { it.phoneList.clear() }
-            it[0].phoneList.run { add(PhoneNumber("+631230001234", "1234")) }
-            it[1].phoneList.run { add(PhoneNumber("+1 123 000 1234", "1234")) }
-            it[2].phoneList.run { add(PhoneNumber("01230001234", "1234")) }
+            it[0].phoneList.add(PhoneNumber("+631230001234", "1234"))
+            it[1].phoneList.add(PhoneNumber("+1 123 000 1234", "1234"))
+            it[2].phoneList.add(PhoneNumber("01230001234", "1234"))
             //adding one number that should be filtered
-            it[3].phoneList.run { add(PhoneNumber("001234", "1234")) }
+            it[3].phoneList.add(PhoneNumber("001234", "1234"))
         }
         //getting contacts from android
         val savedList = getList { withPhoneLike("1230001234") }
         //asserting that all of them were added
         Assert.assertEquals(3, savedList.size)
+    }
+
+    @Test
+    fun withPhoneFiltersPhones() {
+        //create list with 50 contacts and save them
+        createRandomList {
+            //removing all random phones
+            //adding numbers from example
+            it.forEach { it.phoneList.clear() }
+            it.first().phoneList.add(PhoneNumber("+631230001234", "1234"))
+            it.first().phoneList.add(PhoneNumber("1230001234", "1234"))
+            it.first().phoneList.add(PhoneNumber("123000", "1234"))
+        }
+        //getting contacts from android
+        //asserting that all of them were added
+        val first = getList { withPhone("1230001234") }
+        val second = getList { withPhone("+631230001234") }
+        val third = getList { withPhone("123000") }
+        //asserting that all lists are the same and containing same numbers
+        Assert.assertEquals(1, first.size)
+        Assert.assertTrue(first == second && second == third)
     }
 
     @Test
@@ -135,5 +156,4 @@ class GetContactsTests : BaseTest() {
         }
         return dataList
     }
-
 }
