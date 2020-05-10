@@ -8,7 +8,7 @@ apply from: '../deps.gradle'
 
 android {
     compileSdkVersion versions.compileSdkVersion
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "29.0.3"
 
     defaultConfig {
         minSdkVersion 15
@@ -29,12 +29,19 @@ android {
         test.java.srcDirs = ['src/test/kotlin', 'src/test/java']
     }
 
+    tasks.withType(Javadoc).all {
+        enabled = false
+    }
+
 }
 
 dependencies {
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-    androidTestImplementation 'androidx.test:runner:1.1.1'
-    androidTestImplementation 'androidx.test:rules:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+
+    implementation 'com.android.support:support-annotations:28.0.0'
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$versions.kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-test:$versions.kotlin_version"

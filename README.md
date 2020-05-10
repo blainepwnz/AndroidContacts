@@ -19,7 +19,7 @@ Gradle Dependency
 **Step 2.** Add the dependency
 ```
 	dependencies {
-		implementation 'com.tomash:androidcontacts:1.12.5'
+		implementation 'com.tomash:androidcontacts:1.13.0'
 	}
 ```
 
@@ -41,7 +41,8 @@ Need to add permission to read contacts in manifest.
 1. Get all contacts from android device
 2. Get specific data from contacts
 3. Querying inside contacts
-4. Save new contacts  
+4. Save new contacts
+5. Managing blocked contacts
 
 #### Type of fields you can get
 
@@ -170,6 +171,9 @@ List<MyAwesomeContactObject> objects  = new ContactsGetterBuilder(ctx)
 
 Whats new?
 ------------------
+### 1.13.0
+> * Added possibility to get blocked numbers and block and unblock them using BlockedContactsManager
+
 ### 1.12.5
 > * Fixed possibility of NPE during equals of contact data
 
