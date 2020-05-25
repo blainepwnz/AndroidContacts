@@ -1,6 +1,6 @@
 ext.versions = [
-        publishVersion   : '1.13.0',
-        buildCode        : 15,
+        publishVersion   : '1.14.0',
+        buildCode        : 16,
         artifact         : 'androidcontacts',
         compileSdkVersion: 29,
         'kotlin_version' : '1.3.72'
