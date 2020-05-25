@@ -5,7 +5,8 @@ import com.tomash.androidcontacts.contactgetter.entity.ContactData;
 import com.tomash.androidcontacts.contactgetter.main.ContactDataFactory;
 import com.tomash.androidcontacts.contactgetter.main.contactsGetter.ContactsGetterBuilder;
 import com.tomash.androidcontacts.contactgetter.main.contactsSaver.ContactsSaverBuilder;
-
+import com.tomash.androidcontacts.utils.RandomStringKt;
+import com.tomash.androidcontacts.utils.TestUtilsKt;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,16 +15,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.tomash.androidcontacts.utils.TestUtils.createRandomContactData;
-import static com.tomash.androidcontacts.utils.TestUtils.generateRandomString;
-
 public class InsertTests extends BaseTest {
 
     @Test
     public void correctlyInsertsDataList() throws Exception {
         int listSize = 100;
-        List<ContactData> dataList = getMockContactDataList(listSize);
-        int[] ids = new ContactsSaverBuilder(mCtx)
+        List<ContactData> dataList = getMockContactDataList();
+        int[] ids = new ContactsSaverBuilder(TestUtilsKt.context)
             .saveContactsList(dataList);
         Assert.assertEquals(100, ids.length);
         //asserting data inside
@@ -33,7 +31,7 @@ public class InsertTests extends BaseTest {
             idsSet.add(ids[i]);
             namesSet.add(dataList.get(i).getCompositeName());
         }
-        List<ContactData> fromDb = new ContactsGetterBuilder(mCtx)
+        List<ContactData> fromDb = new ContactsGetterBuilder(TestUtilsKt.context)
             .allFields()
             .buildList();
         for (ContactData contactData : fromDb) {
@@ -45,11 +43,11 @@ public class InsertTests extends BaseTest {
     @Test
     public void correctlyInsertsOneData() throws Exception {
         int bitmapSize = 10;
-        ContactData contactData = createRandomContactData(mCtx, bitmapSize);
+        ContactData contactData = TestUtilsKt.createRandomContactData(bitmapSize);
         int id = saveToDb(contactData);
         Assert.assertTrue(id > 0);
         ContactData savedContact = getFromDbById(id);
-        assertContacts(contactData, savedContact, bitmapSize);
+        TestUtilsKt.assertContacts(contactData, savedContact, bitmapSize);
     }
 
     @Test
@@ -57,33 +55,33 @@ public class InsertTests extends BaseTest {
         int firstBitmapSize = 10;
         int secondBitmapSize = 20;
         //creating and saving first contactData to db
-        ContactData contactData1 = createRandomContactData(mCtx, firstBitmapSize);
+        ContactData contactData1 = TestUtilsKt.createRandomContactData(firstBitmapSize);
         int firstId = saveToDb(contactData1);
         contactData1 = getFromDbById(firstId);
         //creating second contact data and assigning uri of bitmap from first to it
-        ContactData contactData2 = createRandomContactData(mCtx, secondBitmapSize);
+        ContactData contactData2 = TestUtilsKt.createRandomContactData(secondBitmapSize);
         contactData2.setUpdatedPhotoUri(contactData1.getPhotoUri());
         int secondId = saveToDb(contactData2);
         contactData2 = getFromDbById(secondId);
-        Assert.assertEquals(getBitmapFromContactData(contactData2).getHeight(), firstBitmapSize);
+        Assert.assertEquals(TestUtilsKt.getBitmapFromContactData(contactData2).getHeight(), firstBitmapSize);
     }
 
     private ContactData getFromDbById(int id) {
-        return new ContactsGetterBuilder(mCtx)
+        return new ContactsGetterBuilder(TestUtilsKt.context)
             .allFields()
             .getById(id);
     }
 
     private int saveToDb(ContactData contactData) {
-        return new ContactsSaverBuilder(mCtx)
+        return new ContactsSaverBuilder(TestUtilsKt.context)
             .saveContact(contactData);
     }
 
-    private List<ContactData> getMockContactDataList(int size) {
+    private List<ContactData> getMockContactDataList() {
         List<ContactData> contactDatas = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             ContactData data = ContactDataFactory.createEmpty();
-            data.setCompositeName(generateRandomString());
+            data.setCompositeName(RandomStringKt.randomString());
             contactDatas.add(data);
         }
         return contactDatas;

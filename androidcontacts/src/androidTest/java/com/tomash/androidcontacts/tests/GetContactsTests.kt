@@ -6,7 +6,9 @@ import com.tomash.androidcontacts.contactgetter.entity.PhoneNumber
 import com.tomash.androidcontacts.contactgetter.main.Sorting
 import com.tomash.androidcontacts.contactgetter.main.contactsGetter.ContactsGetterBuilder
 import com.tomash.androidcontacts.contactgetter.main.contactsSaver.ContactsSaverBuilder
-import com.tomash.androidcontacts.utils.TestUtils
+import com.tomash.androidcontacts.utils.assertContacts
+import com.tomash.androidcontacts.utils.context
+import com.tomash.androidcontacts.utils.createRandomContactData
 import org.junit.Assert
 import org.junit.Test
 import java.util.ArrayList
@@ -16,13 +18,13 @@ class GetContactsTests : BaseTest() {
     private fun createRandomList(listAction: (List<ContactData>) -> Unit): List<ContactData> {
         val savedData = generateListOfRandomContacts()
         listAction(savedData)
-        ContactsSaverBuilder(mCtx)
+        ContactsSaverBuilder(context)
             .saveContactsList(savedData)
         return savedData
     }
 
     private fun getList(builderFunc: ContactsGetterBuilder.() -> ContactsGetterBuilder): List<ContactData> {
-        return builderFunc(ContactsGetterBuilder(mCtx)
+        return builderFunc(ContactsGetterBuilder(context)
             .allFields())
             .buildList()
     }
@@ -152,7 +154,7 @@ class GetContactsTests : BaseTest() {
     private fun generateListOfRandomContacts(): List<ContactData> {
         val dataList = ArrayList<ContactData>()
         for (i in 1..50) {
-            dataList.add(TestUtils.createRandomContactData(mCtx, i))
+            dataList.add(createRandomContactData(i))
         }
         return dataList
     }

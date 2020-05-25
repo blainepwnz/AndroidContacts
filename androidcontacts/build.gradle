@@ -29,6 +29,11 @@ android {
         test.java.srcDirs = ['src/test/kotlin', 'src/test/java']
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     tasks.withType(Javadoc).all {
         enabled = false
     }
@@ -39,6 +44,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation "org.assertj:assertj-core:3.11.1"
 
     implementation 'com.android.support:support-annotations:28.0.0'
 
