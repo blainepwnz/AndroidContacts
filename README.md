@@ -107,5 +107,5 @@ Deleting contacts
     }
 ```
 
-##### Additional info
+#### Additional info
 [More documentation](https://github.com/blainepwnz/AndroidContacts/wiki/Documentation)

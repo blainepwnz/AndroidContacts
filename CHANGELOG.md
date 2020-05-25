@@ -2,7 +2,7 @@ Changelog
 =========
 
 ### 1.14.0 May 25, 2020
-> * Delete contact
+> * Added possibility to delete contact
 
 ### 1.13.0 May 11, 2020
 > * Added possibility to get blocked numbers and block and unblock them using BlockedContactsManager
@@ -16,10 +16,10 @@ Changelog
 ### 1.12.3 Feb 4, 2020
 > * Removed unnecessary properties from manifest
 
-### 1.12.2
+### 1.12.2 Sep 25, 2019
 > * Fixed issue with phone formatting during searching by number
 
-### 1.12.1 Sep 25, 2019
+### 1.12.1 Mar 5, 2019
 > * Fixed regressing with filters
 > * Fixed regression with sorting
 
