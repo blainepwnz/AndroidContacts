@@ -108,4 +108,4 @@ Deleting contacts
 ```
 
 ##### Additional info
-[More documentation](https://github.com/blainepwnz/AndroidContacts/wiki)
+[More documentation](https://github.com/blainepwnz/AndroidContacts/wiki/Documentation)
