@@ -1,10 +1,11 @@
 package com.tomash.androidcontacts.tests
 
-import androidx.test.InstrumentationRegistry
+import androidx.test.platform.app.InstrumentationRegistry
 import com.tomash.androidcontacts.BaseTest
 import com.tomash.androidcontacts.contactgetter.main.blocked.BlockedContactsManager
 import com.tomash.androidcontacts.utils.TelecomTestUtils
-import com.tomash.androidcontacts.utils.TestUtils
+import com.tomash.androidcontacts.utils.context
+import com.tomash.androidcontacts.utils.randomString
 import org.junit.Assert
 import org.junit.Assert.fail
 import org.junit.Test
@@ -14,7 +15,7 @@ class BlockedTests : BaseTest() {
     @Test
     fun correctlyBlocksContact() {
         test {
-            val number = TestUtils.generateRandomString()
+            val number = randomString()
             block(number) {
                 fail("Should not fail")
             }
@@ -52,7 +53,7 @@ class BlockedTests : BaseTest() {
     @Test
     fun doesNothingIfTriesToUnblockUnknownNumber() {
         test {
-            val number = TestUtils.generateRandomString()
+            val number = randomString()
             block(number)
             unblock(number + "123") {
                 fail("Should not fail")
@@ -65,7 +66,7 @@ class BlockedTests : BaseTest() {
     @Test
     fun doesNotAddSameNumberTwoTimes() {
         test {
-            val number = TestUtils.generateRandomString()
+            val number = randomString()
             block(number)
             block(number)
             Assert.assertEquals(1, getBlockedNumbers().size)
@@ -75,16 +76,16 @@ class BlockedTests : BaseTest() {
     private fun test(setAsDefaultDialer: Boolean = true,
         clearAllBlockedContacts: Boolean = true,
         testFunc: BlockedContactsManager.() -> Unit) {
-        val blockedContactsManager = BlockedContactsManager(mCtx)
+        val blockedContactsManager = BlockedContactsManager(context)
         if (setAsDefaultDialer) {
-            TelecomTestUtils.setDefaultDialer(InstrumentationRegistry.getInstrumentation(), mCtx.packageName)
+            TelecomTestUtils.setDefaultDialer(InstrumentationRegistry.getInstrumentation(), context.packageName)
             if (clearAllBlockedContacts) {
                 blockedContactsManager.getBlockedNumbers().forEach {
                     blockedContactsManager.unblock(it)
                 }
             }
         } else {
-            TelecomTestUtils.setDefaultDialer(InstrumentationRegistry.getInstrumentation(), mCtx.packageName + "1234")
+            TelecomTestUtils.setDefaultDialer(InstrumentationRegistry.getInstrumentation(), context.packageName + "1234")
         }
         blockedContactsManager.testFunc()
     }
