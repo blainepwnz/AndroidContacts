@@ -1,7 +1,6 @@
 package com.tomash.androidcontacts.contactgetter.main.contactsSaver;
 
 import android.content.Context;
-
 import com.tomash.androidcontacts.contactgetter.entity.ContactData;
 
 import java.util.Collections;

@@ -1,23 +1,10 @@
 package com.tomash.androidcontacts.contactgetter.main.contactsSaver;
 
-import android.content.ContentProviderOperation;
-import android.content.ContentProviderResult;
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.ContentValues;
+import android.content.*;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.ContactsContract;
-
-import com.tomash.androidcontacts.contactgetter.entity.Address;
-import com.tomash.androidcontacts.contactgetter.entity.ContactData;
-import com.tomash.androidcontacts.contactgetter.entity.Email;
-import com.tomash.androidcontacts.contactgetter.entity.IMAddress;
-import com.tomash.androidcontacts.contactgetter.entity.NameData;
-import com.tomash.androidcontacts.contactgetter.entity.Organization;
-import com.tomash.androidcontacts.contactgetter.entity.PhoneNumber;
-import com.tomash.androidcontacts.contactgetter.entity.Relation;
-import com.tomash.androidcontacts.contactgetter.entity.SpecialDate;
+import com.tomash.androidcontacts.contactgetter.entity.*;
 import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
 
 import java.io.ByteArrayInputStream;

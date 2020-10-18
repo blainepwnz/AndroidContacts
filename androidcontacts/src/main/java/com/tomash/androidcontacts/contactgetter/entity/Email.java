@@ -2,7 +2,6 @@ package com.tomash.androidcontacts.contactgetter.entity;
 
 import android.content.Context;
 import android.provider.ContactsContract;
-
 import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
 
 public class Email extends WithLabel {
