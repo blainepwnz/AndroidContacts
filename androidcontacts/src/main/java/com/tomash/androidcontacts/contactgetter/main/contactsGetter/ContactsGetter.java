@@ -7,36 +7,21 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
-import android.provider.ContactsContract.CommonDataKinds.Im;
+import android.provider.ContactsContract.CommonDataKinds.*;
 import android.util.SparseArray;
-
-import com.tomash.androidcontacts.contactgetter.entity.Address;
-import com.tomash.androidcontacts.contactgetter.entity.ContactData;
 import com.tomash.androidcontacts.contactgetter.entity.Email;
-import com.tomash.androidcontacts.contactgetter.entity.Group;
-import com.tomash.androidcontacts.contactgetter.entity.IMAddress;
-import com.tomash.androidcontacts.contactgetter.entity.NameData;
 import com.tomash.androidcontacts.contactgetter.entity.Organization;
-import com.tomash.androidcontacts.contactgetter.entity.PhoneNumber;
 import com.tomash.androidcontacts.contactgetter.entity.Relation;
-import com.tomash.androidcontacts.contactgetter.entity.SpecialDate;
+import com.tomash.androidcontacts.contactgetter.entity.*;
 import com.tomash.androidcontacts.contactgetter.interfaces.WithLabel;
 import com.tomash.androidcontacts.contactgetter.main.FieldType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.provider.ContactsContract.CommonDataKinds.Event;
-import static android.provider.ContactsContract.CommonDataKinds.GroupMembership;
-import static android.provider.ContactsContract.CommonDataKinds.Nickname;
-import static android.provider.ContactsContract.CommonDataKinds.Note;
+import static android.provider.ContactsContract.CommonDataKinds.*;
 import static android.provider.ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE;
 import static android.provider.ContactsContract.CommonDataKinds.Organization.TITLE;
-import static android.provider.ContactsContract.CommonDataKinds.Phone;
-import static android.provider.ContactsContract.CommonDataKinds.SipAddress;
-import static android.provider.ContactsContract.CommonDataKinds.StructuredName;
-import static android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
-import static android.provider.ContactsContract.CommonDataKinds.Website;
 
 class ContactsGetter {
     private ContentResolver mResolver;

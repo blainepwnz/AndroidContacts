@@ -8,18 +8,18 @@ Gradle Dependency
 ---------------------------
 **Step 1.** Add it in your root build.gradle at the end of repositories:
 ```
-	allprojects {
-		repositories {
-			...
-			jcenter()
-    	}
-	}
+allprojects {
+	repositories {
+		...
+		jcenter()
+    }
+}
 ```
 **Step 2.** Add the dependency
 ```
-	dependencies {
-		implementation 'com.tomash:androidcontacts:1.14.0'
-	}
+dependencies {
+	implementation 'com.tomash:androidcontacts:1.14.0'
+}
 ```
 
 
@@ -64,8 +64,8 @@ Need to add permission to read contacts in manifest.
 Easiest way to get all data by one time:
 ```
 new ContactsGetterBuilder(ctx)
-           .allFields()
-           .buildList();
+    .allFields()
+    .buildList();
 ```
 
 Querying
@@ -83,29 +83,32 @@ Saving new contacts
 -------------------
 
 ```
-    ContactData data = ContactDataFactory.createEmpty();
-    ...Fill it with data
-    //this id is id of newly created contact
-    int id = new ContactsSaverBuilder(context)
-        .saveContact(data);
+ContactData data = ContactDataFactory.createEmpty();
+...Fill it with data
+// id of newly created contact
+int id = new ContactsSaverBuilder(context)
+    .saveContact(data);
 ```
 
 Deleting contacts
 -------------------
 
 ```
-    val contactData = /* get contact data from somewhere */
-    val deleter = ContactsDeleter(context)
-    //usual delete with no need of callbacks
-    deleter.deleteContact(contactData)
-    //full range of callbacks, implement any you need
-    deleter.deleteContact(contactData) {
-        onCompleted { }
-        onFailure { }
-        onResult { }
-        doFinally { }
-    }
+val contactData = /* get contact data from somewhere */
+val deleter = ContactsDeleter(context)
+//usual delete with no need of callbacks
+deleter.deleteContact(contactData)
+//full range of callbacks, implement any you need
+deleter.deleteContact(contactData) {
+    onCompleted { }
+    onFailure { }
+    onResult { }
+    doFinally { }
+}
 ```
 
 #### Additional info
 [More documentation](https://github.com/blainepwnz/AndroidContacts/wiki/Documentation)
+
+#### Changelog
+[More documentation](https://github.com/blainepwnz/AndroidContacts/blob/master/CHANGELOG.md)

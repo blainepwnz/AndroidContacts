@@ -2,7 +2,6 @@ package com.tomash.androidcontacts.contactgetter.main.contactsGetter;
 
 import android.content.Context;
 import android.provider.ContactsContract;
-
 import com.tomash.androidcontacts.contactgetter.entity.ContactData;
 import com.tomash.androidcontacts.contactgetter.interfaces.BaseFilter;
 import com.tomash.androidcontacts.contactgetter.main.FieldType;
