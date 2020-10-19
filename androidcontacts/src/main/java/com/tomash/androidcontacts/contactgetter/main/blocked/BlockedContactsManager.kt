@@ -8,14 +8,18 @@ import android.support.annotation.RequiresApi
 
 /**
  * Used to get blocked contacts.
- * Can be used only starting from android N.
+ *
+ * **Can be used only starting from android N.**
+ *
  * Your app should be default dialer to use this, or it will fail with [SecurityException].
  */
 class BlockedContactsManager(private val ctx: Context) {
 
     /**
      * Gets all blocked contacts.
-     * I feel like you are safe to think, that all numbers in that list are unique, but it is handled on android side.
+     *
+     * I feel like it is safe to think, that all numbers in that list are unique, but it is handled on android side.
+     *
      * In case of error, it can be handled in [onError], and will return empty list.
      */
     @RequiresApi(Build.VERSION_CODES.N)
@@ -39,8 +43,8 @@ class BlockedContactsManager(private val ctx: Context) {
 
     /**
      * Blocks contact.
-     * Does not blocks same number two times.
-     * In case of error, it can be handled in [onError], and will return empty list.
+     *
+     * In case of error, it can be handled in [onError].
      */
     @RequiresApi(Build.VERSION_CODES.N)
     fun block(number: String, onError: (Exception) -> Unit = {}) {
@@ -55,8 +59,10 @@ class BlockedContactsManager(private val ctx: Context) {
 
     /**
      * Unblocks contact.
+     *
      * Does nothing if this number is not blocked.
-     * In case of error, it can be handled in [onError], and will return empty list.
+     *
+     * In case of error, it can be handled in [onError].
      */
     @RequiresApi(Build.VERSION_CODES.N)
     fun unblock(number: String, onError: (Exception) -> Unit = {}) {

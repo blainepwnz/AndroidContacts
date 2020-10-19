@@ -1,7 +1,6 @@
 package com.tomash.androidcontacts.tests
 
 import com.tomash.androidcontacts.BaseTest
-import com.tomash.androidcontacts.contactgetter.entity.ContactData
 import com.tomash.androidcontacts.contactgetter.main.contactsDeleter.ContactsDeleter
 import com.tomash.androidcontacts.contactgetter.main.contactsDeleter.UnsuccessfulDeleteException
 import com.tomash.androidcontacts.utils.ACResultTestRule
@@ -54,25 +53,26 @@ class DeleteContactTest : BaseTest() {
 
     @Test
     fun multipleContactDeleteFails() {
-        val data = createRandomContactData()
+        val first = createRandomContactData()
+        val second = createRandomContactData()
         val deleter = ContactsDeleter(context)
-        deleter.deleteContacts(listOf(data, data),
+        deleter.deleteContacts(listOf(first, second),
             callbackRule.shouldFailWithError(mapOf(
-                data to UnsuccessfulDeleteException(),
-                data to UnsuccessfulDeleteException())
+                first to UnsuccessfulDeleteException(),
+                second to UnsuccessfulDeleteException())
             ))
     }
 
     @Test
     fun mixOfSuccessAndFailWorks() {
         mockContactDataList().saveAll()
-        val allSavedContacts = getAllContacts()
+        val toBeRemoved = getAllContacts().first()
         val data = createRandomContactData()
         val deleter = ContactsDeleter(context)
-        deleter.deleteContacts(listOf(allSavedContacts.first(), data),
-            wrap<List<ContactData>, Map<ContactData, Exception>>(
+        deleter.deleteContacts(listOf(toBeRemoved, data),
+            wrap(
                 callbackRule.shouldFailWithError(mapOf(data to UnsuccessfulDeleteException())),
-                callbackRule.shouldGetResult(listOf(allSavedContacts.first()))
+                callbackRule.shouldGetResult(listOf(toBeRemoved))
             )
         )
     }
