@@ -61,13 +61,55 @@ private class ContactsDeleterImpl(context: Context) : ContactsDeleter {
     }
 }
 
+/**
+ * Default exception, which is called if no contacts were removed
+ * This may happen if [ContactData] was not in database
+ */
 class UnsuccessfulDeleteException : RuntimeException()
 
+/**
+ * Used to delete [ContactData] from phone.
+ * Will throw exception, if you try to delete contacts without permissions.
+ * Will throw [UnsuccessfulDeleteException] if contact was not deleted( for example if it was not database)
+ */
 interface ContactsDeleter {
 
+    /**
+     * Deletes one [ContactData]
+     * @param func returns deleted [ContactData] in [ACResult.onResult]
+     * or [ContactData] and [Exception] in [ACResult.onFailure]
+     */
     fun deleteContact(contact: ContactData,
         func: ACResult<ContactData, Exception>.() -> Unit = {})
 
+    /**
+     * Deletes list of [ContactData]
+     * @param func returns all deleted [ContactData] in [ACResult.onResult] and
+     * map with [ContactData] and corresponding error in [ACResult.onFailure]
+     *
+     * **example**:
+     * ```
+     * deleteContacts(listOf(ContactData("Andrew"),
+     *     ContactData("Peter"),
+     *     ContactData("John"))) {
+     *     // 1 delete was fine, 2 failed.
+     *      onResult { deletedContacts ->
+     *      // deletedContacts contains ContactData("Andrew")
+     *      }
+     *      onFailure { deletedContactsErrMap ->
+     *      // deletedContactsErrMap contains map with
+     *      // ContactData("Peter") -> UnsuccessfulDeleteException
+     *      // ContactData("John") -> UnsuccessfulDeleteException
+     *      }
+     *      onCompleted {
+     *      // not called because of errors
+     *      }
+     *      doFinally {
+     *      // called anyway
+     *      }
+     * }
+     * ```
+     */
     fun deleteContacts(contacts: List<ContactData>,
         func: ACResult<List<ContactData>, Map<ContactData, Exception>>.() -> Unit = {})
 
