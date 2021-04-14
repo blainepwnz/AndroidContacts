@@ -18,7 +18,7 @@ allprojects {
 **Step 2.** Add the dependency
 ```
 dependencies {
-	implementation 'com.tomash:androidcontacts:1.14.0'
+	implementation 'com.tomash:androidcontacts:1.14.1'
 }
 ```
 
