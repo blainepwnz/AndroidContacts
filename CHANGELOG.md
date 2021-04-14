@@ -1,6 +1,9 @@
 Changelog
 =========
 
+### 1.14.1 Apr 14, 2021
+> * Added possibility to set string as sort order to support other sorting orders like update timestamp
+
 ### 1.14.0 May 25, 2020
 > * Added possibility to delete contact
 
