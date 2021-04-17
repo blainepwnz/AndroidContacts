@@ -19,7 +19,6 @@ import com.tomash.androidcontacts.contactgetter.main.FieldType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.provider.ContactsContract.CommonDataKinds.*;
 import static android.provider.ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE;
 import static android.provider.ContactsContract.CommonDataKinds.Organization.TITLE;
 
@@ -86,18 +85,7 @@ class ContactsGetter {
         List<T> result = new ArrayList<>();
         if (mainCursor == null)
             return result;
-        SparseArray<List<PhoneNumber>> phonesDataMap = mEnabledFields.contains(FieldType.PHONE_NUMBERS) ? getDataMap(getCursorFromContentType(WITH_LABEL_PROJECTION, Phone.CONTENT_ITEM_TYPE), new WithLabelCreator<PhoneNumber>() {
-            @Override
-            public PhoneNumber create(String mainData, int contactId, int labelId, String labelName) {
-                PhoneNumber number;
-                if (labelName != null)
-                    number = new PhoneNumber(mainData, labelName);
-                else
-                    number = new PhoneNumber(mCtx, mainData, labelId);
-                number.setContactId(contactId);
-                return number;
-            }
-        }) : new SparseArray<List<PhoneNumber>>();
+        SparseArray<List<PhoneNumber>> phonesDataMap = mEnabledFields.contains(FieldType.PHONE_NUMBERS) ? getPhoneNumberMap() : new SparseArray<List<PhoneNumber>>();
         SparseArray<List<Address>> addressDataMap = mEnabledFields.contains(FieldType.ADDRESS) ? getDataMap(getCursorFromContentType(WITH_LABEL_PROJECTION, StructuredPostal.CONTENT_ITEM_TYPE), new WithLabelCreator<Address>() {
             @Override
             public Address create(String mainData, int contactId, int labelId, String labelName) {
@@ -318,6 +306,34 @@ class ContactsGetter {
         return idImAddressMap;
     }
 
+    private SparseArray<List<PhoneNumber>> getPhoneNumberMap() {
+        Cursor phoneCursor = getCursorFromContentType(new String[]{ID_KEY, MAIN_DATA_KEY, LABEL_DATA_KEY, CUSTOM_LABEL_DATA_KEY, ContactsContract.Data.IS_PRIMARY}, Phone.CONTENT_ITEM_TYPE);
+        SparseArray<List<PhoneNumber>> dataSparseArray = new SparseArray<>();
+        if (phoneCursor != null) {
+            while (phoneCursor.moveToNext()) {
+                int id = phoneCursor.getInt(phoneCursor.getColumnIndex(ID_KEY));
+                String data = phoneCursor.getString(phoneCursor.getColumnIndex(MAIN_DATA_KEY));
+                int labelId = phoneCursor.getInt(phoneCursor.getColumnIndex(LABEL_DATA_KEY));
+                boolean isPrimary = phoneCursor.getInt(phoneCursor.getColumnIndex(ContactsContract.Data.IS_PRIMARY)) == 1;
+                String customLabel = phoneCursor.getString(phoneCursor.getColumnIndex(CUSTOM_LABEL_DATA_KEY));
+                PhoneNumber number;
+                if (customLabel != null)
+                    number = new PhoneNumber(data, customLabel);
+                else
+                    number = new PhoneNumber(mCtx, data, labelId);
+                number.setContactId(id);
+                number.setPrimary(isPrimary);
+                List<PhoneNumber> currentDataList = dataSparseArray.get(id);
+                if (currentDataList == null) {
+                    currentDataList = new ArrayList<>();
+                    currentDataList.add(number);
+                    dataSparseArray.put(id, currentDataList);
+                } else currentDataList.add(number);
+            }
+            phoneCursor.close();
+        }
+        return dataSparseArray;
+    }
 
     private SparseArray<String> getStringDataMap(String contentType) {
         SparseArray<String> idNoteMap = new SparseArray<>();
