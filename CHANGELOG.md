@@ -1,6 +1,9 @@
 Changelog
 =========
 
+### 1.14.2 Apr 17, 2021
+> * Added possibility to set and get default phone number
+
 ### 1.14.1 Apr 14, 2021
 > * Added possibility to set string as sort order to support other sorting orders like update timestamp
 

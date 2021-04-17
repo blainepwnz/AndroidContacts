@@ -37,7 +37,7 @@ class ContactsSaver {
 
     private void generateInsertOperations(List<ContentValues> contentValuesList, ContactData contactData, int id) {
         for (PhoneNumber number : contactData.getPhoneList()) {
-            contentValuesList.add(getWithLabelCV(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE, number, id));
+            contentValuesList.add(getPhonesCV(number, id));
         }
         for (Address address : contactData.getAddressesList()) {
             contentValuesList.add(getWithLabelCV(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE, address, id));
@@ -151,6 +151,18 @@ class ContactsSaver {
         contentValues.put(ContactsContract.Data.DATA5, imAddress.getLabelId());
         if (imAddress.getLabelId() == imAddress.getCustomLabelId())
             contentValues.put(ContactsContract.Data.DATA6, imAddress.getLabelName());
+        return contentValues;
+    }
+
+    private ContentValues getPhonesCV(PhoneNumber phoneNumber, int id) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ContactsContract.Data.RAW_CONTACT_ID, id);
+        contentValues.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
+        contentValues.put(ContactsContract.Data.DATA1, phoneNumber.getMainData());
+        contentValues.put(ContactsContract.Data.DATA2, phoneNumber.getLabelId());
+        contentValues.put(ContactsContract.Data.IS_PRIMARY, phoneNumber.isPrimary());
+        if (phoneNumber.getLabelId() == phoneNumber.getCustomLabelId())
+            contentValues.put(ContactsContract.Data.DATA3, phoneNumber.getLabelName());
         return contentValues;
     }
 

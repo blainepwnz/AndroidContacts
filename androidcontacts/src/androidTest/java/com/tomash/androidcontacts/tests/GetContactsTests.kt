@@ -23,6 +23,14 @@ class GetContactsTests : BaseTest() {
         return savedData
     }
 
+    private fun createRandomContact(contactAction: (ContactData) -> Unit): ContactData {
+        val savedData = createRandomContactData()
+        contactAction(savedData)
+        ContactsSaverBuilder(context)
+            .saveContact(savedData)
+        return savedData
+    }
+
     private fun getList(builderFunc: ContactsGetterBuilder.() -> ContactsGetterBuilder): List<ContactData> {
         return builderFunc(ContactsGetterBuilder(context)
             .allFields())
@@ -30,7 +38,6 @@ class GetContactsTests : BaseTest() {
     }
 
     @Test
-    @Throws(Exception::class)
     fun correctlyGetsValidContacts() {
         val savedData = createRandomList {}
         savedData.forEachIndexed { index, _ ->
@@ -39,6 +46,20 @@ class GetContactsTests : BaseTest() {
             Assert.assertEquals(1, savedList.size)
             assertContacts(randomContact, savedList.first(), index.inc())
         }
+    }
+
+    @Test
+    fun correctlyGetsPrimaryPhone() {
+        val phone = "12345"
+        createRandomContact {
+            val phoneNumber = it.phoneList.first()
+            phoneNumber.mainData = phone
+            phoneNumber.isPrimary = true
+
+        }
+        val saved = getList { this }
+        Assert.assertEquals(1, saved.first().phoneList.filter { it.isPrimary }.size)
+        Assert.assertTrue(saved.first().phoneList.first { it.mainData == phone }.isPrimary)
     }
 
     @Test

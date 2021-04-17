@@ -1,5 +1,5 @@
 ext.versions = [
-        publishVersion   : '1.14.1',
+        publishVersion   : '1.14.2',
         buildCode        : 16,
         artifact         : 'androidcontacts',
         compileSdkVersion: 30,
