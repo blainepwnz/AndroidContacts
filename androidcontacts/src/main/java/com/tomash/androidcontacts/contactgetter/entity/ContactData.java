@@ -31,6 +31,7 @@ public abstract class ContactData {
     private Uri updatedPhotoUri;
     private Bitmap updatedBitmap;
     private boolean isFavorite;
+    private boolean compareInNickName = false;
 
     public int getContactId() {
         return contactId;
@@ -266,6 +267,16 @@ public abstract class ContactData {
         this.accountType = accountType;
         return this;
     }
+    
+    public Boolean getCompareInNickName{
+        return compareInNickName;
+    }
+
+    public ContactData setCompareInNickName(Boolean compareInNickName) {
+        this.compareInNickName = compareInNickName;
+        return this;
+    }
+    public setCompareInNickName()
 
     @Override
     public boolean equals(Object o) {
@@ -273,7 +284,7 @@ public abstract class ContactData {
         if (o == null || getClass() != o.getClass()) return false;
 
         ContactData contact = (ContactData) o;
-
+ 
         if (contactId != contact.contactId) return false;
         if (!emailList.equals(contact.emailList)) return false;
         if (!phoneList.equals(contact.phoneList)) return false;
@@ -304,6 +315,10 @@ public abstract class ContactData {
 
     @Override
     public int hashCode() {
-        return contactId;
+        if(compareInNickName){
+           return compositeName;
+        }else{
+            return contactId;
+        } 
     }
 }
