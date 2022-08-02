@@ -2,6 +2,8 @@ AndroidContacts
 ===================
 ----------------------------------
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/blainepwnz/AndroidContacts/blob/master/LICENSE.txt)
+[![](https://jitpack.io/v/blainepwnz/AndroidContacts.svg)](https://jitpack.io/#blainepwnz/AndroidContacts)
+
 
 Gradle Dependency
 ---------------------------
