@@ -2,7 +2,6 @@ AndroidContacts
 ===================
 ----------------------------------
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/blainepwnz/AndroidContacts/blob/master/LICENSE.txt)
-[![Download](https://api.bintray.com/packages/blainepwnz/maven/androidcontacts/images/download.svg) ](https://bintray.com/blainepwnz/maven/androidcontacts/_latestVersion)
 
 Gradle Dependency
 ---------------------------
@@ -11,14 +10,14 @@ Gradle Dependency
 allprojects {
 	repositories {
 		...
-		jcenter()
+		maven { url 'https://jitpack.io' }
     }
 }
 ```
 **Step 2.** Add the dependency
 ```
 dependencies {
-	implementation 'com.tomash:androidcontacts:1.14.2'
+	implementation("com.github.blainepwnz:AndroidContacts:1.14.0")
 }
 ```
 
